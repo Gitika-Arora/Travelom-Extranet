@@ -1,69 +1,141 @@
-import { useState, useEffect } from "react";
-import ReactTable from "@/components/reactTable";
-import { Button } from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdownMenu";
-import { DotsVerticalIcon } from "@radix-ui/react-icons";
-import helper, { logedInUser } from '../../services/helper'
-import InfiniteScroll from "react-infinite-scroll-component";
-import { LoaderCircle } from 'lucide-react';
-import { useHistory } from 'react-router-dom';
-import listData from "../../data/listData";
+import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
-import { TreeTable } from 'primereact/treetable';
 import { Column } from 'primereact/column';
-import { Checkbox } from 'primereact/checkbox';
-
+import { Button } from 'primereact/button';
+import { Calendar } from 'primereact/calendar';
+//import 'primeflex/primeflex.css';
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 
 export default function Availability() {
-    const history = useHistory();
-    const [userList, setUserList] = useState([]);
-    const [hasMore, setHasMore] = useState(true);
-    const [lastElement, setLastElement] = useState(undefined);
-    const [userType, setUserType] = useState();
-    const [jsonData, setJsonData] = useState([]);
-    const [column, setColumn] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [dateRange, setDateRange] = useState([]);
+    const [selectedAvailability, setSelectedAvailability] = useState([]);
+    const [rooms, setRooms] = useState([
+        {
+            name: 'Standard Room, 1 King Bed, Accessible, Bathtub',
+            availability: {},
+        },
+        {
+            name: 'Standard Room, 1 King Bed, Non-Smoking',
+            availability: {},
+        },
+        {
+            name: 'Standard Room, 2 Queen Beds, Non-Smoking',
+            availability: {},
+        },
+        {
+            name: 'Suite, 1 King Bed, Non-Smoking, Jetted Tub',
+            availability: {},
+        },
+    ]);
 
+    // Update the date range whenever a new date is selected
     useEffect(() => {
-        getUserdata()
-    }, []);
+        generateDateRange(selectedDate);
+    }, [selectedDate]);
 
-    async function getUserdata() {
-        console.log(listData.availability);
-        setJsonData(listData.availability);
-    }
+    // Function to generate a date range (next 10 days)
+    const generateDateRange = (startDate) => {
+        const newDateRange = [];
+        for (let i = 0; i < 10; i++) {
+            const date = new Date(startDate);
+            date.setDate(startDate.getDate() + i);
+            newDateRange.push(formatDate(date));
+        }
+        setDateRange(newDateRange);
+    };
 
-    function handleCheckoxChange(checked, data, key) {
-        const updateJsonData = jsonData.map(roomData => (roomData.id === data.id ? {...roomData, key: checked} : roomData))
-        console.log({data, jsonData, updateJsonData})
-        setJsonData(updateJsonData)
-    }
+    // Function to format the date as "MMM DD, YYYY"
+    const formatDate = (date) => {
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+        });
+    };
+
+    const toggleAvailability = (roomIndex, dateIndex) => {
+        const updatedRooms = [...rooms]; 
+        const date = dateRange[dateIndex]; 
+        console.log("dateIndex", dateIndex)
+        console.log("updatedRooms", updatedRooms)
+        console.log("date", date)
+       
+        if (!updatedRooms[roomIndex].availability[date]) {
+            
+            updatedRooms[roomIndex].availability[date] = true;
+        } else {
+            // Toggle availability (true <-> false)
+            updatedRooms[roomIndex].availability[date] = !updatedRooms[roomIndex].availability[date];
+
+            // If toggled to false, remove the entry
+            if (!updatedRooms[roomIndex].availability[date]) {
+                delete updatedRooms[roomIndex].availability[date];
+            }
+        }
+
+        setRooms(updatedRooms); // Update the state with the new availability
+    };
+    // Function to handle form submission
+    const handleSubmit = () => {
+        const availabilityData = rooms.map((room) => {
+            const availableDates = Object.keys(room.availability).filter(
+                (date) => room.availability[date] === true
+            );
+            return {
+                roomName: room.name,
+                availableDates,
+            };
+        });
+
+        setSelectedAvailability(availabilityData);
+        console.log("Selected Availability:", availabilityData);
+    };
+
+
 
     return (
-        <div className="t-4 mx-auto max-w-full">
-
-            <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold">Availability</h1>
+        <div className="p-grid">
+            <div className="flex-auto">
+                <label htmlFor="buttondisplay" className="font-bold block mb-2">
+                   Select Date
+                </label>
+                <Calendar value={selectedDate} onChange={(e) => setSelectedDate(e.value)} showIcon />
             </div>
 
-            <div className="mt-4">
-                <DataTable value={jsonData} removableSort emptyMessage={<div className="flex justify-center">No results</div>}>
-                    <Column field="room" header="Room" ></Column>
-                    <Column field="03/10/2024" header="03/10/2024" body={(data) => (<Checkbox onChange={e => handleCheckoxChange(e.checked, data, "03/10/2024")} checked={data["03/10/2024"]}></Checkbox>)}></Column>
-                    <Column field="04/10/2024" header="04/10/2024" body={(data) => (<Checkbox onChange={e => setJsonData({ ...jsonData, "04/10/2024": e.checked })} checked={data["04/10/2024"]}></Checkbox>)}></Column>
-                    <Column field="05/10/2024" header="05/10/2024" body={(data) => (<Checkbox onChange={e => setJsonData({ ...jsonData, "05/10/2024": e.checked })} checked={data["05/10/2024"]}></Checkbox>)}></Column>
-                    <Column field="06/10/2024" header="06/10/2024" body={(data) => (<Checkbox onChange={e => setJsonData({ ...jsonData, "06/10/2024": e.checked })} checked={data["06/10/2024"]}></Checkbox>)}></Column>
-                    <Column field="07/10/2024" header="07/10/2024" body={(data) => (<Checkbox onChange={e => setJsonData({ ...jsonData, "07/10/2024": e.checked })} checked={data["07/10/2024"]}></Checkbox>)}></Column>
-                    <Column field="08/10/2024" header="08/10/2024" body={(data) => (<Checkbox onChange={e => setJsonData({ ...jsonData, "08/10/2024": e.checked })} checked={data["08/10/2024"]}></Checkbox>)}></Column>
-                    <Column field="09/10/2024" header="09/10/2024" body={(data) => (<Checkbox onChange={e => setJsonData({ ...jsonData, "09/10/2024": e.checked })} checked={data["09/10/2024"]}></Checkbox>)}></Column>
-                    <Column field="10/10/2024" header="10/10/2024" body={(data) => (<Checkbox onChange={e => setJsonData({ ...jsonData, "10/10/2024": e.checked })} checked={data["10/10/2024"]}></Checkbox>)}></Column>
-                    <Column field="11/10/2024" header="11/10/2024" body={(data) => (<Checkbox onChange={e => setJsonData({ ...jsonData, "11/10/2024": e.checked })} checked={data["11/10/2024"]}></Checkbox>)}></Column>
+            {/* Main Content */}
+            <div className="p-col-10 mt-10">
+                {/* DataTable for room availability */}
+                <DataTable value={rooms} responsiveLayout="scroll">
+                    {/* Room Name Column */}
+                    <Column field="name" header="Room Type" style={{ width: '35%' }} />
+
+                    {/* Dynamic Date Columns */}
+                    {dateRange.map((date, dateIndex) => (
+                        <Column
+                            key={dateIndex}
+                            header={date}
+                            body={(rowData, options) => {
+                                const isAvailable = rowData.availability[date] || false;
+                                return (
+                                    <Button
+                                        severity={isAvailable ? 'success' : 'danger'}
+                                        icon={isAvailable ? 'pi pi-check' : 'pi pi-times'}
+                                        onClick={() =>
+                                            toggleAvailability(options.rowIndex, dateIndex)
+                                        } // Toggle the availability
+                                    />
+                                );
+                            }}
+                        />
+                    ))}
                 </DataTable>
+                <div className="justify-end flex">
+                <Button label="Save" onClick={handleSubmit} className="mt-2" />
+                </div>
             </div>
         </div>
     );
-}
+};
