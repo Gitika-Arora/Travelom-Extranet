@@ -22,6 +22,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { FileUpload } from 'primereact/fileupload';
 import Helper from '@/services/helper';
 import { getHotels, listHotels } from "@/graphql/queries";
+import { updateHotels } from '@/graphql/mutations';
 import { generateClient } from 'aws-amplify/data';
 import { uploadData } from 'aws-amplify/storage';
 import { Trash2 } from "lucide-react";
@@ -34,19 +35,15 @@ export default function HotelDetails() {
 
     const fileUploadRef = useRef();
 
-    const [hotel, setHotel] = useState();
     const [hotelDetails, setHotelDetails] = useState({});
     const [amenityOptions, setAmenityOptions] = useState([]);
     const [roomOptions, setRoomOptions] = useState([]);
-    const [exploreOptions, setExploreOptions] = useState([]);
     const [images, setImages] = useState([]);
 
     const [hotelName, setHotelName] = useState();
     const [overview, setOverview] = useState();
     const [amenities, setAmenities] = useState();
     const [address, setAddress] = useState();
-    const [rooms, setRooms] = useState();
-    const [attraction, setAttraction] = useState();
     const [city, setCity] = useState();
     const [hotelImages, setHotelImages] = useState([]);
 
@@ -59,13 +56,7 @@ export default function HotelDetails() {
         console.log(hotelAmenity);
         setAmenityOptions(hotelAmenity);
         setRoomOptions(listData.staticData.rooms);
-        setExploreOptions(listData.staticData.explore);
-        listData.hotels.forEach(hotel => {
-            if (hotel.id == hid) {
-                console.log(hotel)
-                setHotel(hotel)
-            }
-        });
+        
         setHotelDetails(listData.hotelDetails)
 
         const client = generateClient();
@@ -74,11 +65,9 @@ export default function HotelDetails() {
 
         // const hotelData = response.data.getHotels
 
-        console.log(response.data.getHotels);
+        console.log(response?.data?.getHotels);
 
-        const hotelData = { ...response.data.getHotels, hotelDescriptiveContents: JSON.parse(response.data.getHotels.hotelDescriptiveContents) };
-
-        console.log({ hotelData });
+        const hotelData = { ...response.data?.getHotels, hotelDescriptiveContents: JSON.parse(response?.data?.getHotels?.hotelDescriptiveContents) };
 
         setHotelName(hotelData?.hotelName);
         setAddress(hotelData?.address);
@@ -88,7 +77,6 @@ export default function HotelDetails() {
         setOverview(descriptionData[0]?.Text?._text);
 
         const amenityData = hotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.HotelInfo?.Services?.Service.filter(data => {
-            console.log(data);
             return data?._attributes?.Included === "true" && data?._attributes?.Code
         }).map(data => (JSON.parse(data?._attributes?.Code)))
 
@@ -96,10 +84,6 @@ export default function HotelDetails() {
         setAmenities(amenityData)
 
         setHotelImages(hotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.MultimediaObjects?.MultimediaObject);
-        setAttraction(hotelData.hotelDescriptiveContents.hotelDescriptiveContent[0].areaInfo.attractions.attraction);
-        console.log({ hotelData });
-
-        console.log({ hotelImages: hotelData.hotelDescriptiveContents.hotelDescriptiveContent[0].multimediaObjects.multimediaObject });
     }
 
     const handleImageClick = (index) => {
@@ -107,12 +91,22 @@ export default function HotelDetails() {
         setHotelImages(updatedImages)
     }
 
-    const handleSubmit = e => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         console.log(fileUploadRef.current.getFiles())
 
+        const todoDetails = {
+            id: hid,
+            description: 'Updated description'
+        };
 
+        const client = generateClient();
+
+        const updatedTodo = await client.graphql({
+            query: updateHotels,
+            variables: { input: todoDetails }
+        });
         /*const file = event.target.files[0];
         uploadData({
             path: file.name,
@@ -197,15 +191,6 @@ export default function HotelDetails() {
                                         />
                                     </div>
                                 </div>
-                                {/*<div className="w-full px-4">
-                                    <div className="relative w-full mb-3">
-                                        <label className="block text-blueGray-600 text-lg  font-bold mb-2" >
-                                            Room Amenities
-                                        </label>
-                                        <MultiSelect value={hotelDetails?.explore} onChange={(e) => setHotelDetails({ ...hotelDetails, explore: e.value })} options={exploreOptions} optionLabel="attractionName"
-                                            placeholder="Select Rooms" pt={{ root: "w-full md:w-full" }} />
-                                    </div>
-                                </div>*/}
                                 <div className="w-full px-4">
                                     <div className="relative w-full mb-3">
                                         <label className="block text-blueGray-600 text-lg  font-bold mb-2">
