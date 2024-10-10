@@ -1,0 +1,1098 @@
+[
+ {
+  "Code": 1,
+  "HAC": "24-hour front desk"
+ },
+ {
+  "Code": 2,
+  "HAC": "24-hour room service"
+ },
+ {
+  "Code": 3,
+  "HAC": "24-hour security"
+ },
+ {
+  "Code": 4,
+  "HAC": "Adjoining rooms"
+ },
+ {
+  "Code": 5,
+  "HAC": "Air conditioning"
+ },
+ {
+  "Code": 6,
+  "HAC": "Airline desk"
+ },
+ {
+  "Code": 7,
+  "HAC": "ATM\/Cash machine"
+ },
+ {
+  "Code": 8,
+  "HAC": "Baby sitting"
+ },
+ {
+  "Code": 9,
+  "HAC": "BBQ\/Picnic area"
+ },
+ {
+  "Code": 10,
+  "HAC": "Bilingual staff"
+ },
+ {
+  "Code": 11,
+  "HAC": "Bookstore"
+ },
+ {
+  "Code": 12,
+  "HAC": "Boutiques\/stores"
+ },
+ {
+  "Code": 13,
+  "HAC": "Brailed elevators"
+ },
+ {
+  "Code": 14,
+  "HAC": "Business library"
+ },
+ {
+  "Code": 15,
+  "HAC": "Car rental desk"
+ },
+ {
+  "Code": 16,
+  "HAC": "Casino"
+ },
+ {
+  "Code": 17,
+  "HAC": "Check cashing policy"
+ },
+ {
+  "Code": 18,
+  "HAC": "Check-in kiosk"
+ },
+ {
+  "Code": 19,
+  "HAC": "Cocktail lounge"
+ },
+ {
+  "Code": 20,
+  "HAC": "Coffee shop"
+ },
+ {
+  "Code": 21,
+  "HAC": "Coin operated laundry"
+ },
+ {
+  "Code": 22,
+  "HAC": "Concierge desk"
+ },
+ {
+  "Code": 23,
+  "HAC": "Concierge floor"
+ },
+ {
+  "Code": 24,
+  "HAC": "Conference facilities"
+ },
+ {
+  "Code": 25,
+  "HAC": "Courtyard"
+ },
+ {
+  "Code": 26,
+  "HAC": "Currency exchange"
+ },
+ {
+  "Code": 27,
+  "HAC": "Desk with electrical outlet"
+ },
+ {
+  "Code": 28,
+  "HAC": "Doctor on call"
+ },
+ {
+  "Code": 29,
+  "HAC": "Door man"
+ },
+ {
+  "Code": 30,
+  "HAC": "Driving range"
+ },
+ {
+  "Code": 31,
+  "HAC": "Drugstore\/pharmacy"
+ },
+ {
+  "Code": 32,
+  "HAC": "Duty free shop"
+ },
+ {
+  "Code": 33,
+  "HAC": "Elevators"
+ },
+ {
+  "Code": 34,
+  "HAC": "Executive floor"
+ },
+ {
+  "Code": 35,
+  "HAC": "Exercise gym"
+ },
+ {
+  "Code": 36,
+  "HAC": "Express check-in"
+ },
+ {
+  "Code": 37,
+  "HAC": "Express check-out"
+ },
+ {
+  "Code": 38,
+  "HAC": "Family plan"
+ },
+ {
+  "Code": 39,
+  "HAC": "Florist"
+ },
+ {
+  "Code": 40,
+  "HAC": "Folios"
+ },
+ {
+  "Code": 41,
+  "HAC": "Free airport shuttle"
+ },
+ {
+  "Code": 42,
+  "HAC": "Free parking"
+ },
+ {
+  "Code": 43,
+  "HAC": "Free transportation"
+ },
+ {
+  "Code": 44,
+  "HAC": "Game room"
+ },
+ {
+  "Code": 45,
+  "HAC": "Gift\/News stand"
+ },
+ {
+  "Code": 46,
+  "HAC": "Hairdresser\/barber"
+ },
+ {
+  "Code": 47,
+  "HAC": "Accessible facilities"
+ },
+ {
+  "Code": 48,
+  "HAC": "Health club"
+ },
+ {
+  "Code": 49,
+  "HAC": "Heated pool"
+ },
+ {
+  "Code": 50,
+  "HAC": "Housekeeping - daily"
+ },
+ {
+  "Code": 51,
+  "HAC": "Housekeeping - weekly"
+ },
+ {
+  "Code": 52,
+  "HAC": "Ice machine"
+ },
+ {
+  "Code": 53,
+  "HAC": "Indoor parking"
+ },
+ {
+  "Code": 54,
+  "HAC": "Indoor pool"
+ },
+ {
+  "Code": 55,
+  "HAC": "Jacuzzi"
+ },
+ {
+  "Code": 56,
+  "HAC": "Jogging track"
+ },
+ {
+  "Code": 57,
+  "HAC": "Kennels"
+ },
+ {
+  "Code": 58,
+  "HAC": "Laundry\/Valet service"
+ },
+ {
+  "Code": 59,
+  "HAC": "Liquor store"
+ },
+ {
+  "Code": 60,
+  "HAC": "Live entertainment"
+ },
+ {
+  "Code": 61,
+  "HAC": "Massage services"
+ },
+ {
+  "Code": 62,
+  "HAC": "Nightclub"
+ },
+ {
+  "Code": 63,
+  "HAC": "Off-Site parking"
+ },
+ {
+  "Code": 64,
+  "HAC": "On-Site parking"
+ },
+ {
+  "Code": 65,
+  "HAC": "Outdoor parking"
+ },
+ {
+  "Code": 66,
+  "HAC": "Outdoor pool"
+ },
+ {
+  "Code": 67,
+  "HAC": "Package\/Parcel services"
+ },
+ {
+  "Code": 68,
+  "HAC": "Parking"
+ },
+ {
+  "Code": 69,
+  "HAC": "Photocopy center"
+ },
+ {
+  "Code": 70,
+  "HAC": "Playground"
+ },
+ {
+  "Code": 71,
+  "HAC": "Pool"
+ },
+ {
+  "Code": 72,
+  "HAC": "Poolside snack bar"
+ },
+ {
+  "Code": 73,
+  "HAC": "Public address system"
+ },
+ {
+  "Code": 74,
+  "HAC": "Ramp access"
+ },
+ {
+  "Code": 75,
+  "HAC": "Recreational vehicle parking"
+ },
+ {
+  "Code": 76,
+  "HAC": "Restaurant"
+ },
+ {
+  "Code": 77,
+  "HAC": "Room service"
+ },
+ {
+  "Code": 78,
+  "HAC": "Safe deposit box"
+ },
+ {
+  "Code": 79,
+  "HAC": "Sauna"
+ },
+ {
+  "Code": 80,
+  "HAC": "Security"
+ },
+ {
+  "Code": 81,
+  "HAC": "Shoe shine stand"
+ },
+ {
+  "Code": 82,
+  "HAC": "Shopping mall"
+ },
+ {
+  "Code": 83,
+  "HAC": "Solarium"
+ },
+ {
+  "Code": 84,
+  "HAC": "Spa"
+ },
+ {
+  "Code": 85,
+  "HAC": "Sports bar"
+ },
+ {
+  "Code": 86,
+  "HAC": "Steam bath"
+ },
+ {
+  "Code": 87,
+  "HAC": "Storage space"
+ },
+ {
+  "Code": 88,
+  "HAC": "Sundry\/Convenience store"
+ },
+ {
+  "Code": 89,
+  "HAC": "Technical concierge"
+ },
+ {
+  "Code": 90,
+  "HAC": "Theatre desk"
+ },
+ {
+  "Code": 91,
+  "HAC": "Tour\/sightseeing desk"
+ },
+ {
+  "Code": 92,
+  "HAC": "Translation services"
+ },
+ {
+  "Code": 93,
+  "HAC": "Travel agency"
+ },
+ {
+  "Code": 94,
+  "HAC": "Truck parking"
+ },
+ {
+  "Code": 95,
+  "HAC": "Valet cleaning"
+ },
+ {
+  "Code": 96,
+  "HAC": "Dry cleaning"
+ },
+ {
+  "Code": 97,
+  "HAC": "Valet parking"
+ },
+ {
+  "Code": 98,
+  "HAC": "Vending machines"
+ },
+ {
+  "Code": 99,
+  "HAC": "Video tapes"
+ },
+ {
+  "Code": 100,
+  "HAC": "Wakeup service"
+ },
+ {
+  "Code": 101,
+  "HAC": "Wheel chair access"
+ },
+ {
+  "Code": 102,
+  "HAC": "Whirlpool"
+ },
+ {
+  "Code": 103,
+  "HAC": "Multilingual staff"
+ },
+ {
+  "Code": 104,
+  "HAC": "Wedding services"
+ },
+ {
+  "Code": 105,
+  "HAC": "Banquet facilities"
+ },
+ {
+  "Code": 106,
+  "HAC": "Bell staff\/porter"
+ },
+ {
+  "Code": 107,
+  "HAC": "Beauty shop\/salon"
+ },
+ {
+  "Code": 108,
+  "HAC": "Complimentary self service laundry"
+ },
+ {
+  "Code": 109,
+  "HAC": "Direct dial telephone"
+ },
+ {
+  "Code": 110,
+  "HAC": "Female traveler room\/floor"
+ },
+ {
+  "Code": 111,
+  "HAC": "Pharmacy"
+ },
+ {
+  "Code": 112,
+  "HAC": "Stables"
+ },
+ {
+  "Code": 113,
+  "HAC": "120 AC"
+ },
+ {
+  "Code": 114,
+  "HAC": "120 DC"
+ },
+ {
+  "Code": 115,
+  "HAC": "220 AC"
+ },
+ {
+  "Code": 116,
+  "HAC": "Accessible parking"
+ },
+ {
+  "Code": 117,
+  "HAC": "220 DC"
+ },
+ {
+  "Code": 118,
+  "HAC": "Barbeque grills"
+ },
+ {
+  "Code": 119,
+  "HAC": "Women's clothing"
+ },
+ {
+  "Code": 120,
+  "HAC": "Men's clothing"
+ },
+ {
+  "Code": 121,
+  "HAC": "Children's clothing"
+ },
+ {
+  "Code": 122,
+  "HAC": "Shops and commercial services"
+ },
+ {
+  "Code": 123,
+  "HAC": "Video games"
+ },
+ {
+  "Code": 124,
+  "HAC": "Sports bar open for lunch"
+ },
+ {
+  "Code": 125,
+  "HAC": "Sports bar open for dinner"
+ },
+ {
+  "Code": 126,
+  "HAC": "Room service - full menu"
+ },
+ {
+  "Code": 127,
+  "HAC": "Room service - limited menu"
+ },
+ {
+  "Code": 128,
+  "HAC": "Room service - limited hours"
+ },
+ {
+  "Code": 129,
+  "HAC": "Valet same day dry cleaning"
+ },
+ {
+  "Code": 130,
+  "HAC": "Body scrub"
+ },
+ {
+  "Code": 131,
+  "HAC": "Body wrap"
+ },
+ {
+  "Code": 132,
+  "HAC": "Public area air conditioned"
+ },
+ {
+  "Code": 133,
+  "HAC": "Efolio available to company"
+ },
+ {
+  "Code": 134,
+  "HAC": "Individual Efolio available"
+ },
+ {
+  "Code": 135,
+  "HAC": "Video review billing"
+ },
+ {
+  "Code": 136,
+  "HAC": "Butler service"
+ },
+ {
+  "Code": 137,
+  "HAC": "Complimentary in-room coffee or tea"
+ },
+ {
+  "Code": 138,
+  "HAC": "Complimentary buffet breakfast"
+ },
+ {
+  "Code": 139,
+  "HAC": "Complimentary cocktails"
+ },
+ {
+  "Code": 140,
+  "HAC": "Complimentary coffee in lobby"
+ },
+ {
+  "Code": 141,
+  "HAC": "Complimentary continental breakfast"
+ },
+ {
+  "Code": 142,
+  "HAC": "Complimentary full american breakfast"
+ },
+ {
+  "Code": 143,
+  "HAC": "Dinner delivery service from local restaurant"
+ },
+ {
+  "Code": 144,
+  "HAC": "Complimentary newspaper delivered to room"
+ },
+ {
+  "Code": 145,
+  "HAC": "Complimentary newspaper in lobby"
+ },
+ {
+  "Code": 146,
+  "HAC": "Complimentary shoeshine"
+ },
+ {
+  "Code": 147,
+  "HAC": "Evening reception"
+ },
+ {
+  "Code": 148,
+  "HAC": "Front desk"
+ },
+ {
+  "Code": 149,
+  "HAC": "Grocery shopping service available"
+ },
+ {
+  "Code": 150,
+  "HAC": "Halal food available"
+ },
+ {
+  "Code": 151,
+  "HAC": "Kosher food available"
+ },
+ {
+  "Code": 152,
+  "HAC": "Limousine service"
+ },
+ {
+  "Code": 153,
+  "HAC": "Managers reception"
+ },
+ {
+  "Code": 154,
+  "HAC": "Medical Facilities Service"
+ },
+ {
+  "Code": 155,
+  "HAC": "Telephone jack adaptor available"
+ },
+ {
+  "Code": 156,
+  "HAC": "All-inclusive meal plan"
+ },
+ {
+  "Code": 157,
+  "HAC": "Buffet breakfast"
+ },
+ {
+  "Code": 158,
+  "HAC": "Communal bar area"
+ },
+ {
+  "Code": 159,
+  "HAC": "Continental breakfast"
+ },
+ {
+  "Code": 160,
+  "HAC": "Full meal plan"
+ },
+ {
+  "Code": 161,
+  "HAC": "Full american breakfast"
+ },
+ {
+  "Code": 162,
+  "HAC": "Meal plan available"
+ },
+ {
+  "Code": 163,
+  "HAC": "Modified american meal plan"
+ },
+ {
+  "Code": 164,
+  "HAC": "Food and beverage outlets"
+ },
+ {
+  "Code": 165,
+  "HAC": "Lounges\/bars"
+ },
+ {
+  "Code": 166,
+  "HAC": "Barber shop"
+ },
+ {
+  "Code": 167,
+  "HAC": "Video checkout"
+ },
+ {
+  "Code": 168,
+  "HAC": "Onsite laundry"
+ },
+ {
+  "Code": 169,
+  "HAC": "24-hour food & beverage kiosk"
+ },
+ {
+  "Code": 170,
+  "HAC": "Concierge lounge"
+ },
+ {
+  "Code": 171,
+  "HAC": "Parking fee managed by hotel"
+ },
+ {
+  "Code": 172,
+  "HAC": "Transportation"
+ },
+ {
+  "Code": 173,
+  "HAC": "Breakfast served in restaurant"
+ },
+ {
+  "Code": 174,
+  "HAC": "Lunch served in restaurant"
+ },
+ {
+  "Code": 175,
+  "HAC": "Dinner served in restaurant"
+ },
+ {
+  "Code": 176,
+  "HAC": "Full service housekeeping"
+ },
+ {
+  "Code": 177,
+  "HAC": "Limited service housekeeping"
+ },
+ {
+  "Code": 178,
+  "HAC": "High speed internet access for laptop in public areas"
+ },
+ {
+  "Code": 179,
+  "HAC": "Wireless internet connection in public areas"
+ },
+ {
+  "Code": 180,
+  "HAC": "Additional services\/amenities\/facilities on property"
+ },
+ {
+  "Code": 181,
+  "HAC": "Transportation services - local area"
+ },
+ {
+  "Code": 182,
+  "HAC": "Transportation services - local office"
+ },
+ {
+  "Code": 183,
+  "HAC": "DVD\/video rental"
+ },
+ {
+  "Code": 184,
+  "HAC": "Parking lot"
+ },
+ {
+  "Code": 185,
+  "HAC": "Parking deck"
+ },
+ {
+  "Code": 186,
+  "HAC": "Street side parking"
+ },
+ {
+  "Code": 187,
+  "HAC": "Cocktail lounge with entertainment"
+ },
+ {
+  "Code": 188,
+  "HAC": "Cocktail lounge with light fare"
+ },
+ {
+  "Code": 189,
+  "HAC": "Motorcycle parking"
+ },
+ {
+  "Code": 190,
+  "HAC": "Phone services"
+ },
+ {
+  "Code": 191,
+  "HAC": "Ballroom"
+ },
+ {
+  "Code": 192,
+  "HAC": "Bus parking"
+ },
+ {
+  "Code": 193,
+  "HAC": "Children's play area"
+ },
+ {
+  "Code": 194,
+  "HAC": "Children's nursery"
+ },
+ {
+  "Code": 195,
+  "HAC": "Disco"
+ },
+ {
+  "Code": 196,
+  "HAC": "Early check-in"
+ },
+ {
+  "Code": 197,
+  "HAC": "Locker room"
+ },
+ {
+  "Code": 198,
+  "HAC": "Non-smoking rooms (generic)"
+ },
+ {
+  "Code": 199,
+  "HAC": "Train access"
+ },
+ {
+  "Code": 200,
+  "HAC": "Aerobics instruction"
+ },
+ {
+  "Code": 201,
+  "HAC": "Baggage hold"
+ },
+ {
+  "Code": 202,
+  "HAC": "Bicycle rentals"
+ },
+ {
+  "Code": 203,
+  "HAC": "Dietician"
+ },
+ {
+  "Code": 204,
+  "HAC": "Late check-out available"
+ },
+ {
+  "Code": 205,
+  "HAC": "Pet-sitting services"
+ },
+ {
+  "Code": 206,
+  "HAC": "Prayer mats"
+ },
+ {
+  "Code": 207,
+  "HAC": "Sports trainer"
+ },
+ {
+  "Code": 208,
+  "HAC": "Turndown service"
+ },
+ {
+  "Code": 209,
+  "HAC": "DVDs\/videos - children"
+ },
+ {
+  "Code": 210,
+  "HAC": "Bank"
+ },
+ {
+  "Code": 211,
+  "HAC": "Lobby coffee service"
+ },
+ {
+  "Code": 212,
+  "HAC": "Banking services"
+ },
+ {
+  "Code": 213,
+  "HAC": "Stairwells"
+ },
+ {
+  "Code": 214,
+  "HAC": "Pet amenities available"
+ },
+ {
+  "Code": 215,
+  "HAC": "Exhibition\/convention floor"
+ },
+ {
+  "Code": 216,
+  "HAC": "Long term parking"
+ },
+ {
+  "Code": 217,
+  "HAC": "Children not allowed"
+ },
+ {
+  "Code": 218,
+  "HAC": "Children welcome"
+ },
+ {
+  "Code": 219,
+  "HAC": "Courtesy car"
+ },
+ {
+  "Code": 220,
+  "HAC": "Hotel does not provide pornographic films\/TV"
+ },
+ {
+  "Code": 221,
+  "HAC": "Hotspots"
+ },
+ {
+  "Code": 222,
+  "HAC": "Free high speed internet connection"
+ },
+ {
+  "Code": 223,
+  "HAC": "Internet services"
+ },
+ {
+  "Code": 224,
+  "HAC": "Pets allowed"
+ },
+ {
+  "Code": 225,
+  "HAC": "Gourmet highlights"
+ },
+ {
+  "Code": 226,
+  "HAC": "Catering services"
+ },
+ {
+  "Code": 227,
+  "HAC": "Complimentary breakfast"
+ },
+ {
+  "Code": 228,
+  "HAC": "Business center"
+ },
+ {
+  "Code": 229,
+  "HAC": "Business services"
+ },
+ {
+  "Code": 230,
+  "HAC": "Secured parking"
+ },
+ {
+  "Code": 231,
+  "HAC": "Racquetball"
+ },
+ {
+  "Code": 232,
+  "HAC": "Snow sports"
+ },
+ {
+  "Code": 233,
+  "HAC": "Tennis court"
+ },
+ {
+  "Code": 234,
+  "HAC": "Water sports"
+ },
+ {
+  "Code": 235,
+  "HAC": "Child programs"
+ },
+ {
+  "Code": 236,
+  "HAC": "Golf"
+ },
+ {
+  "Code": 237,
+  "HAC": "Horseback riding"
+ },
+ {
+  "Code": 238,
+  "HAC": "Oceanfront"
+ },
+ {
+  "Code": 239,
+  "HAC": "Beachfront"
+ },
+ {
+  "Code": 240,
+  "HAC": "Hair dryer"
+ },
+ {
+  "Code": 241,
+  "HAC": "Ironing board"
+ },
+ {
+  "Code": 242,
+  "HAC": "Heated guest rooms"
+ },
+ {
+  "Code": 243,
+  "HAC": "Toilet"
+ },
+ {
+  "Code": 244,
+  "HAC": "Parlor"
+ },
+ {
+  "Code": 245,
+  "HAC": "Video game player"
+ },
+ {
+  "Code": 246,
+  "HAC": "Thalassotherapy"
+ },
+ {
+  "Code": 247,
+  "HAC": "Private dining for groups"
+ },
+ {
+  "Code": 248,
+  "HAC": "Hearing impaired services"
+ },
+ {
+  "Code": 249,
+  "HAC": "Carryout breakfast"
+ },
+ {
+  "Code": 250,
+  "HAC": "Deluxe continental breakfast"
+ },
+ {
+  "Code": 251,
+  "HAC": "Hot continental breakfast"
+ },
+ {
+  "Code": 252,
+  "HAC": "Hot breakfast"
+ },
+ {
+  "Code": 253,
+  "HAC": "Private pool"
+ },
+ {
+  "Code": 254,
+  "HAC": "Connecting rooms"
+ },
+ {
+  "Code": 255,
+  "HAC": "Data port"
+ },
+ {
+  "Code": 256,
+  "HAC": "Exterior corridors"
+ },
+ {
+  "Code": 257,
+  "HAC": "Gulf view"
+ },
+ {
+  "Code": 258,
+  "HAC": "Handicap rooms"
+ },
+ {
+  "Code": 259,
+  "HAC": "High speed internet access"
+ },
+ {
+  "Code": 260,
+  "HAC": "Interior corridors"
+ },
+ {
+  "Code": 261,
+  "HAC": "High speed wireless"
+ },
+ {
+  "Code": 262,
+  "HAC": "Kitchenette"
+ },
+ {
+  "Code": 263,
+  "HAC": "Private bath or shower"
+ },
+ {
+  "Code": 264,
+  "HAC": "Fire safety compliant"
+ },
+ {
+  "Code": 265,
+  "HAC": "Welcome drink"
+ },
+ {
+  "Code": 266,
+  "HAC": "Boarding pass print-out available"
+ },
+ {
+  "Code": 267,
+  "HAC": "Printing services available"
+ },
+ {
+  "Code": 268,
+  "HAC": "All public areas non-smoking"
+ },
+ {
+  "Code": 269,
+  "HAC": "Meeting rooms"
+ },
+ {
+  "Code": 270,
+  "HAC": "Movies in room"
+ },
+ {
+  "Code": 271,
+  "HAC": "Secretarial service"
+ },
+ {
+  "Code": 272,
+  "HAC": "Snow skiing"
+ },
+ {
+  "Code": 273,
+  "HAC": "Water skiing"
+ },
+ {
+  "Code": 274,
+  "HAC": "Fax service"
+ }
+]

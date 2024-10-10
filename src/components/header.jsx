@@ -32,7 +32,7 @@ function Header({ toggle, sidebarState }) {
                                 </svg>
                             </button>
                             <a className="flex ms-2 md:me-24">
-                                <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-white">TravelOm</span>
+                                <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-white">Travelom &#8209; Extranet</span>
                             </a>
                         </div>
                         <div className="flex items-center">

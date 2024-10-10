@@ -16,31 +16,105 @@ import { useHistory } from 'react-router-dom';
 import listData from "@/data/listData";
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { getHotels, listHotels } from "@/graphql/queries";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { DynamoDBDocumentClient, GetCommand } from "@aws-sdk/lib-dynamodb";
+
+import { generateClient } from 'aws-amplify/data';
+import { get } from 'aws-amplify/api';
+import axios from "axios";
 
 export default function Hotels() {
     const history = useHistory();
-    const [userList, setUserList] = useState([]);
-    const [hasMore, setHasMore] = useState(true);
-    const [lastElement, setLastElement] = useState(undefined);
-    const [userType, setUserType] = useState();
-    const [jsonData, setJsonData] = useState([]);
+    const [hotelsList, setHotelsList] = useState([]);
+
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         getUserdata()
     }, []);
 
     async function getUserdata() {
-        const activityData = [];
 
-        //console.log("listData", listData);
+        setLoading(true);
 
-        listData.hotels.forEach((item) => {
-            //console.log("item", item)
-            activityData.push(item);
+        /*const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({
+            region: "us-east-1",
+        }));
+
+
+        const queryParams = {
+            TableName: "Hotels-yurgf6c35fhvjaigpmzlhhjosa-staging",
+            ExclusiveStartKey: null
+        };
+
+        try {
+            const response = await docClient.send(new GetCommand(queryParams));
+            console.log(response);
+        } catch (error) {
+            console.error("Error querying DynamoDB:", error);
+        }*/
+
+        // rest api call from amplify package
+        /*try {
+            const restOperation = get({
+                apiName: 'listHotels',
+                path: '/listHotels'
+            });
+
+            const response = await restOperation.response;
+            console.log('GET call succeeded: ', response);
+        } catch (e) {
+            console.log('GET call failed: ', JSON.parse(e));
+        }*/
+
+        // rest api call from axios
+        let config = {
+            method: 'get',
+            url: 'https://dca1hl4r89.execute-api.us-east-1.amazonaws.com/default/test-lambda',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            crossDomain: true
+        };
+
+        try {
+            const response = await axios.request(config);
+            console.log(JSON.stringify(response.data));
+        }
+        catch (error) {
+            console.log(error);
+        }
+
+        const client = generateClient();
+
+        const variables = {
+            filter: {
+                isActive: {
+                    eq: true
+                },
+                isDeleted: {
+                    eq: false
+                },
+            }
+        }
+
+        const response = await client.graphql({ query: listHotels, variables });
+
+        const items = response.data.listHotels.items
+        console.log(items);
+
+        const hotels = items.map(item => ({ ...item, hotelDescriptiveContents: JSON.parse(item.hotelDescriptiveContents)}))
+
+        //const hotelsData = await client.graphql({ query: getHotels, variables: { id: "d4df6639-dc18-46a1-b79d-670b5f014405"} });
+
+        console.log({
+            hotels, 
+            //hotelsData
         });
-        console.log(activityData)
-        setJsonData(activityData);
 
+        setHotelsList(hotels)
+        setLoading(false)
     }
 
 
@@ -75,11 +149,12 @@ export default function Hotels() {
                         }
             >*/}
 
-                <DataTable value={jsonData} removableSort emptyMessage={<div className="flex justify-center">No results</div>}>
-                    <Column field="name" header="Name" sortable style={{ width: '20%' }}></Column>
-                    <Column field="city" header="City" sortable style={{ width: '20%' }}></Column>
-                    <Column field="owner" header="Owner" style={{ width: '20%' }}></Column>
-                    <Column field="phone" header="Phone" style={{ width: '20%' }}></Column>
+                <DataTable value={hotelsList} loading={loading} loadingIcon={<div className="mt-28"><LoaderCircle className="h-6 w-6 animate-spin" /></div>} removableSort emptyMessage={<div className="flex justify-center">No results</div>}>
+                    <Column field="hotelName" header="Hotel Name" sortable style={{ width: '20%' }}></Column>
+                    <Column field="hotelCode" header="Hotel Code" sortable style={{ width: '20%' }}></Column>
+                    <Column field="brandCode" header="Brand Code" style={{ width: '20%' }}></Column>
+                    <Column field="city" header="City" style={{ width: '20%' }}></Column>
+                    {/*<Column field="phone" header="Phone" style={{ width: '20%' }}></Column>*/}
                     <Column
                         body={(rowData, column) => (<DropdownMenu modal={false}>
                             <DropdownMenuTrigger asChild>

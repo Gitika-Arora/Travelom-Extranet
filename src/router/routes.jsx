@@ -7,7 +7,7 @@ import HotelDetails from "@/views/hotels/hotelDetails";
 // --------------------images--------------
 
 import DashboardIcon from "../assets/images/DashboardIcon.png"
-import { User, House, Users as UsersIcon, Newspaper, ShoppingCart, Dumbbell, CircleUserRound, Send } from 'lucide-react';
+import { User, House, Users as UsersIcon, Newspaper, ShoppingCart, Dumbbell, CircleUserRound, Send, History } from 'lucide-react';
 const routes = [
     {
         id: 1,
@@ -55,10 +55,12 @@ const routes = [
         id: 7,
         path: '/availability',
         component: Availability,
+        //name: "Booking History",
         name: "Availability",
         isPublic: false,
         icon: <User size={20} />,
-        //isInSidebar: true
+        //icon: <History size={20} />,
+        isInSidebar: true
     },
     {
         id: 51,

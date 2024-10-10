@@ -6,6 +6,11 @@ import { PrimeReactProvider, PrimeReactContext } from 'primereact/api';
 import "primereact/resources/themes/lara-light-cyan/theme.css";
 import { twMerge } from 'tailwind-merge';
 import Tailwind from 'primereact/passthrough/tailwind';
+import { Amplify } from 'aws-amplify';
+import amplifyconfig from './amplifyconfiguration.json';
+
+Amplify.configure(amplifyconfig);
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
