@@ -1,14 +1,15 @@
 import { cn } from "@/lib/utils";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
+import { Card } from 'primereact/card';
 
-export default function Image({ className, src, ...props }) {
+export default function Image({ className, src, footer, ...props }) {
 
     const [hover, setHover] = useState(false)
 
     return (
         <div
-            className={cn("relative w-32 h-fit", className)}
+            className={cn("relative w-full h-fit border rounded", className)}
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
             {...props}
@@ -17,6 +18,15 @@ export default function Image({ className, src, ...props }) {
                 <Trash2 size={35} color="red" />
             </div>
             <img src={src} />
+            <div className="p-1 flex justify-end">
+                <Trash2 color="red" />
+            </div>
+
+            {/*<div className="card flex justify-content-center">
+                <Card footer={footer} className="md:w-25rem">
+                    <img src={src} />
+                </Card>
+            </div>*/}
         </div>
     )
 }

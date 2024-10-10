@@ -121,6 +121,8 @@ const listData = {
             { id: 5, attractionName: "Stonewall Jacksons Hdqters.", distance: "10.00" },
             { id: 6, attractionName: "Skyline Drive", distance: "20.00" },
             { id: 7, attractionName: "Martinsburg Outlet", distance: "35.00" },
+            { id: "ACC002", attractionName: "City Center", distance: "1.00" },
+            { id: "ACC003", attractionName: "Lynchburg Regional Airport Preston Glenn Field", distance: "2.00" },
         ]
     }
 }
