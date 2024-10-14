@@ -22,7 +22,8 @@ import { MultiSelect } from 'primereact/multiselect';
 import { FileUpload } from 'primereact/fileupload';
 import Helper from '@/services/helper';
 import { getHotels, listHotels } from "@/graphql/queries";
-import { updateHotels } from '@/graphql/mutations';
+//import { updateHotels } from '@/graphql/mutations';
+import * as mutations from '@/graphql/mutations';
 import { generateClient } from 'aws-amplify/data';
 import { uploadData } from 'aws-amplify/storage';
 import { Trash2 } from "lucide-react";
@@ -80,7 +81,8 @@ export default function HotelDetails() {
             return data?._attributes?.Included === "true" && data?._attributes?.Code
         }).map(data => (JSON.parse(data?._attributes?.Code)))
 
-        console.log({ amenityData, hotelAmenity });
+        console.log("hotelAmenity", hotelAmenity );
+        console.log("amenityData", amenityData );
         setAmenities(amenityData)
 
         setHotelImages(hotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.MultimediaObjects?.MultimediaObject);
@@ -91,22 +93,46 @@ export default function HotelDetails() {
         setHotelImages(updatedImages)
     }
 
+    const hotelDescriptiveData = {
+        HotelDescriptiveContent: {
+            HotelInfo: {
+                Descriptions: {
+                    Description: [
+                        {
+                            _attributes: { AdditionalDetailCode: '2' },
+                            Text: { _text: overview }
+                        }
+                    ]
+                }
+            }
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        console.log(fileUploadRef.current.getFiles())
-
+        console.log("hotelName", overview)
+        //console.log(fileUploadRef.current.getFiles())
+        debugger;
         const todoDetails = {
             id: hid,
-            description: 'Updated description'
+            hotelName: hotelName,
+            address: address,
+            city: city,
+            hotelDescriptiveContents: JSON.stringify(hotelDescriptiveData)
         };
 
         const client = generateClient();
 
-        const updatedTodo = await client.graphql({
-            query: updateHotels,
-            variables: { input: todoDetails }
-        });
+        try {
+            const updatedTodo = await client.graphql({
+                query: mutations.updateHotels,
+                variables: { input: todoDetails }, // Ensure the body is a string
+            });
+            console.log("updatedTodo", updatedTodo);
+            alert("Hotel details updated successfully")
+        } catch (error) {
+            console.error("Error updating todo:", error);
+        }
         /*const file = event.target.files[0];
         uploadData({
             path: file.name,
@@ -150,6 +176,20 @@ export default function HotelDetails() {
                 <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-100 border-0 bg-white">
                     <form onSubmit={handleSubmit}>
                         <div className="flex-auto px-4 lg:px-6 py-6 pt-6">
+                            <div className="flex justify-end gap-3">
+                                <Button
+                                    type="button"
+                                    variant="cancel"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    type="submit"
+                                >
+                                    Save
+                                    {/* {loadingStatus && <LoaderCircle className="ml-1 h-6 w-6 animate-spin" />} */}
+                                </Button>
+                            </div>
                             <div className="flex flex-wrap">
                                 <div className="w-full px-4">
                                     <div className="relative w-full mb-3">
