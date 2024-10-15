@@ -61,7 +61,7 @@ const routes = [
         isPublic: false,
         icon: <User size={20} />,
         //icon: <History size={20} />,
-        isInSidebar: true
+        //isInSidebar: true
     },
     {
         id: 51,
