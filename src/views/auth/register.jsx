@@ -1,47 +1,52 @@
-import { useState, useEffect } from "react";
-import { useHistory, useParams } from 'react-router-dom';
+﻿import { useState } from "react";
+import { useHistory } from 'react-router-dom';
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { LoaderCircle, Eye, EyeOff, AtSign, PinIcon } from 'lucide-react';
-import backgroundImage from "@/assets/images/top-view-weights-floor.avif"
+import { LoaderCircle, Eye, EyeOff, AtSign } from 'lucide-react';
+import backgroundImage from "@/../public/top-view-weights-floor.avif"
 import 'react-phone-number-input/style.css'
 import PhoneInput from 'react-phone-number-input'
-import { decryptData, isVallidImageFile, handleImage, getModules } from '../../services/helper';
+import { signUp, signIn, signOut } from 'aws-amplify/auth';
+import { generateClient } from 'aws-amplify/api';
+import { createUsers } from '@/graphql/mutations';
 
-function Register(props) {
-    const { useremail, iid } = useParams();
+function Register() {
     const history = useHistory();
     const [passwordShow, setPasswordShow] = useState(false);
     const [confirmPasswordShow, setConfirmPasswordShow] = useState(false);
 
+    const [hotelName, setHotelName] = useState('');
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [phone, setPhone] = useState("");
-    const [propertyCode, setPropertyCode] = useState("");
+    const [hotelCode, setHotelCode] = useState("");
 
-    const [address1, setAddress1] = useState("");
-    const [address2, setAddress2] = useState("");
-    const [city, setCity] = useState();
-    const [pinCode, setPinCode] = useState();
+    const [address, setAddress] = useState("");
+    //const [addressLine2, setAddressLine2] = useState("");
+    const [city, setCity] = useState("");
+    const [pinCode, setPinCode] = useState("");
+    const [country, setCountry] = useState("");
 
 
     const [loadingStatus, setLoadingStatus] = useState(false);
-    const [invitedByUserId, setInvitedByUserId] = useState("");
 
-    const [imageDisplay, setImageDisplay] = useState('');
+    /*const [imageDisplay, setImageDisplay] = useState('');
     const [files, setFiles] = useState({
         image: null,
-    })
+    })*/
 
 
 
     function validateInputs() {
         let message = '';
 
+        if (!hotelName || (hotelName && hotelName.trim() === "")) {
+            message += "Please enter hotel name \n"
+        }
         if (!firstName || (firstName && firstName.trim() === "")) {
             message += "Please enter first name \n"
         }
@@ -67,13 +72,13 @@ function Register(props) {
             message += "Please enter a valid 10-digit phone number\n";
         }
 
-        if (!address1 || (address1 && address1.trim() === "")) {
-            message += "Please enter address 1 \n";
+        if (!address || (address && address.trim() === "")) {
+            message += "Please enter address \n";
         }
 
-        if (!address2 || (address2 && address2.trim() === "")) {
-            message += "Please enter address 2 \n";
-        }
+        /*if (!addressLine2 || (addressLine2 && addressLine2.trim() === "")) {
+            message += "Please enter address line 2 \n";
+        }*/
 
         if (!city || (city && city.trim() === "")) {
             message += "Please enter city \n";
@@ -100,30 +105,122 @@ function Register(props) {
     async function handleSignUp(e) {
         e.preventDefault();
         let isValid = validateInputs();
-
+        let isUserAlreadyExists = false;
         /* const file_ext = files.profilePic.name.slice(
              ((files.profilePic.name.lastIndexOf('.') - 1) >>> 0) + 2
          );*/
 
         if (isValid) {
             setLoadingStatus(true)
-            history.push("/login");
+
+            await signIn({ username: email.trim().toLowerCase(), password })
+                .then((user) => {
+                    signOut();
+                    isUserAlreadyExists = true;
+                })
+                .catch(async (err) => {
+                    console.log({ err });
+                    if (err.name === "UserNotFoundException") {
+                        isUserAlreadyExists = false;
+                    } else if (err.name === "NotAuthorizedException") {
+                        if (err.message === "Incorrect username or password.") isUserAlreadyExists = true;
+                    }
+                });
+
+            let username = email.trim().split("@")[0] + Math.floor(1000000000 + Math.random() * 9000000000);
+
+            if (isUserAlreadyExists) {
+                alert('An account has already been setup with this email. Login instead.')
+            } else {
+
+                try {
+
+                    const user = await signUp({
+                        username: email.trim().toLowerCase(),
+                        password,
+                        options: {
+                            userAttributes: {
+                                preferred_username: username,
+                                'custom:userType': "2"
+                            },
+                        },
+
+                    });
+
+                    console.log(user)
+
+                    const client = generateClient();
+
+                    const userDetails = {
+                        "id": user.userId,
+                        "userName": `${firstName} ${lastName}`,
+                        "fullName": `${firstName} ${lastName}`,
+                        "firstName": firstName,
+                        "lastName": lastName,
+                        "email": email.trim().toLowerCase(),
+                        "phoneNumber": phone,
+                        "city": city,
+                        "zipCode": pinCode,
+                        "country": country,
+                        "address": address,
+                        //"addressLine2": addressLine2,
+                        "isActive": true,
+                        "isDeleted": false,
+                        //"userType": 2
+                    }
+
+                    const newUserData = await client.graphql({
+                        query: createUsers,
+                        variables: { input: userDetails }
+                    });
+
+                    //history.push("/login");
+
+                    console.log({ user, newUserData, userDetails });
+                } catch (err) {
+                    console.log('error signing up:', { err });
+                    if (err.name === "UsernameExistsException") {
+                        alert('This email is already registered. Try logging in with it')
+                    } else if (err.name === "InvalidPasswordException" || err.name === "InvalidParameterException") {
+                        alert('Password must be at least 8 characters')
+                    } else {
+                        alert('Something went wrong. Please try again later')
+                    }
+                }
+
+            }
+
+            setLoadingStatus(false);
+
         }
     }
 
     return (
 
-        <div className="m-auto bg-cover bg-center bg-no-repeat bg-fixed" style={{ backgroundImage: `url(${backgroundImage})` }}>
+        <div className="m-auto bg-cover bg-fixed bg-center bg-no-repeat" style={{ backgroundImage: `url(${backgroundImage})` }}>
 
-            <div className="mx-auto max-w-screen-xl px-4 py-16 sm:px-6 lg:px-8">
+            <div className="px-4 py-16 mx-auto max-w-screen-xl sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-xl">
-                    <form onSubmit={handleSignUp} className="mb-0 mt-6 space-y-4 rounded-lg p-4 shadow-lg sm:p-6 lg:p-8 bg-white">
+                    <form onSubmit={handleSignUp} className="mb-0 mt-6 space-y-4 p-4 bg-white rounded-lg shadow-lg sm:p-6 lg:p-8">
                         <p className="text-center text-lg font-medium">Invite register</p>
 
                         <div className="flex flex-wrap">
-                            <div className="w-full lg:w-6/12 px-4">
-                                <div className="relative w-full mb-3">
-                                    <label className="block text-blueGray-600 text-lg  font-bold mb-2">
+                            <div className="px-4 w-full">
+                                <div className="mb-3 relative w-full">
+                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
+                                        Hotel Name
+                                    </label>
+                                    <Input
+                                        type="text"
+                                        className="px-3 py-2"
+                                        value={hotelName}
+                                        onChange={e => setHotelName(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            <div className="px-4 w-full lg:w-6/12">
+                                <div className="mb-3 relative w-full">
+                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
                                         First Name
                                     </label>
                                     <Input
@@ -134,13 +231,12 @@ function Register(props) {
                                     />
                                 </div>
                             </div>
-                            <div className="w-full lg:w-6/12 px-4">
-                                <div className="relative w-full mb-3">
-                                    <label className="block text-blueGray-600 text-lg  font-bold mb-2">
+                            <div className="px-4 w-full lg:w-6/12">
+                                <div className="mb-3 relative w-full">
+                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
                                         Last Name
                                     </label>
                                     <Input
-                                        name="lastName"
                                         type="text"
                                         className="px-3 py-2"
                                         value={lastName}
@@ -148,9 +244,9 @@ function Register(props) {
                                     />
                                 </div>
                             </div>
-                            <div className="w-full px-4">
-                                <div className="relative w-full mb-3">
-                                    <label className="block text-blueGray-600 text-lg  font-bold mb-2">
+                            <div className="px-4 w-full">
+                                <div className="mb-3 relative w-full">
+                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
                                         Email Address
                                     </label>
                                     <div className="relative">
@@ -161,7 +257,7 @@ function Register(props) {
                                             onChange={e => setEmail(e.target.value)}
                                             autoComplete="email"
                                         />
-                                        <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
+                                        <span className="inset-y-0 end-0 px-4 absolute grid place-content-center">
                                             <div
                                                 className="size-4 text-gray-400"
                                             >
@@ -171,9 +267,9 @@ function Register(props) {
                                     </div>
                                 </div>
                             </div>
-                            <div className="w-full lg:w-6/12 px-4">
-                                <div className="relative w-full mb-3">
-                                    <label className="block text-blueGray-600 text-lg  font-bold mb-2">
+                            <div className="px-4 w-full lg:w-6/12">
+                                <div className="mb-3 relative w-full">
+                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
                                         Password
                                     </label>
                                     <div className="relative">
@@ -184,7 +280,7 @@ function Register(props) {
                                             onChange={e => setPassword(e.target.value)}
                                             autoComplete="new-password"
                                         />
-                                        <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
+                                        <span className="inset-y-0 end-0 px-4 absolute grid place-content-center">
                                             <div
                                                 className="size-4 text-gray-400 cursor-pointer"
                                                 onClick={() => setPasswordShow(!passwordShow)}
@@ -195,9 +291,9 @@ function Register(props) {
                                     </div>
                                 </div>
                             </div>
-                            <div className="w-full lg:w-6/12 px-4">
-                                <div className="relative w-full mb-3">
-                                    <label className="block text-blueGray-600 text-lg  font-bold mb-2">
+                            <div className="px-4 w-full lg:w-6/12">
+                                <div className="mb-3 relative w-full">
+                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
                                         Confirm Password
                                     </label>
                                     <div className="relative">
@@ -208,7 +304,7 @@ function Register(props) {
                                             onChange={e => setConfirmPassword(e.target.value)}
                                             autoComplete="new-password"
                                         />
-                                        <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
+                                        <span className="inset-y-0 end-0 px-4 absolute grid place-content-center">
                                             <div
                                                 className="size-4 text-gray-400 cursor-pointer"
                                                 onClick={() => setConfirmPasswordShow(!confirmPasswordShow)}
@@ -219,9 +315,9 @@ function Register(props) {
                                     </div>
                                 </div>
                             </div>
-                            {/* <div className="w-full lg:w-6/12 px-4">
-                                <div className="relative w-full mb-3">
-                                    <label className="block text-blueGray-600 text-lg  font-bold mb-2">
+                            {/* <div className="px-4 w-full lg:w-6/12">
+                                <div className="mb-3 relative w-full">
+                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
                                     Brand Code
                                     </label>
                                     <Input
@@ -232,70 +328,51 @@ function Register(props) {
                                     />
                                 </div>
                             </div> */}
-                            <div className="w-full px-4">
-                                <div className="relative w-full mb-3">
-                                    <label className="block text-blueGray-600 text-lg  font-bold mb-2">
-                                        Property Code
+                            <div className="px-4 w-full">
+                                <div className="mb-3 relative w-full">
+                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
+                                        Hotel Code
                                     </label>
                                     <Input
-                                        name="lastName"
                                         type="text"
                                         className="px-3 py-2"
-                                        value={propertyCode}
-                                        onChange={e => setPropertyCode(e.target.value)}
+                                        value={hotelCode}
+                                        onChange={e => setHotelCode(e.target.value)}
                                     />
                                 </div>
                             </div>
-                            <div className="w-full px-4">
-                                <div className="relative w-full mb-3">
-                                    <label className="block text-blueGray-600 text-lg  font-bold mb-2">
-                                        Phone
-                                    </label>
-                                    <PhoneInput
-                                        international
-                                        defaultCountry="IN"
-                                        value={phone}
-                                        onChange={setPhone}
-                                        className="px-3 py-2 border-2 rounded focus:border-gray-500"
-                                        numberInputProps={{ className: "focus:outline-none" }}
-                                    />
-                                </div>
-                            </div>
-                            <div className="w-full px-4">
-                                <div className="relative w-full mb-3">
-                                    <label className="block text-blueGray-600 text-lg  font-bold mb-2">
-                                        Address 1
+                            <div className="px-4 w-full">
+                                <div className="mb-3 relative w-full">
+                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
+                                        Address
                                     </label>
                                     <Input
-                                        name="address1"
                                         type="text"
                                         className="px-3 py-2"
-                                        value={address1}
-                                        onChange={e => setAddress1(e.target.value)}
+                                        value={address}
+                                        onChange={e => setAddress(e.target.value)}
                                     />
                                 </div>
                             </div>
-                            <div className="w-full px-4">
-                                <div className="relative w-full mb-3">
-                                    <label className="block text-blueGray-600 text-lg  font-bold mb-2">
-                                        Address 2
+                            {/*<div className="px-4 w-full">
+                                <div className="mb-3 relative w-full">
+                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
+                                        Address Line 2
                                     </label>
                                     <Input
-                                        name="lastName"
                                         type="text"
                                         className="px-3 py-2"
-                                        value={address2}
-                                        onChange={e => setAddress2(e.target.value)}
+                                        value={addressLine2}
+                                        onChange={e => setAddressLine2(e.target.value)}
                                     />
                                 </div>
-                            </div>
-                            <div className="w-full px-4">
-                                <div className="relative w-full mb-3">
-                                    <label className="block text-blueGray-600 text-lg  font-bold mb-2">
+                            </div>*/}
+                            <div className="px-4 w-full">
+                                <div className="mb-3 relative w-full">
+                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
                                         City
                                     </label>
                                     <Input
-                                        name="lastName"
                                         type="text"
                                         className="px-3 py-2"
                                         value={city}
@@ -303,13 +380,12 @@ function Register(props) {
                                     />
                                 </div>
                             </div>
-                            <div className="w-full px-4">
-                                <div className="relative w-full mb-3">
-                                    <label className="block text-blueGray-600 text-lg  font-bold mb-2">
+                            <div className="px-4 w-full">
+                                <div className="mb-3 relative w-full">
+                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
                                         Pincode
                                     </label>
                                     <Input
-                                        name="lastName"
                                         type="text"
                                         className="px-3 py-2"
                                         value={pinCode}
@@ -317,24 +393,52 @@ function Register(props) {
                                     />
                                 </div>
                             </div>
+                            <div className="px-4 w-full">
+                                <div className="mb-3 relative w-full">
+                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
+                                        Country
+                                    </label>
+                                    <Input
+                                        type="text"
+                                        className="px-3 py-2"
+                                        value={country}
+                                        onChange={e => setCountry(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            <div className="px-4 w-full">
+                                <div className="mb-3 relative w-full">
+                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
+                                        Phone
+                                    </label>
+                                    <PhoneInput
+                                        international
+                                        defaultCountry="IN"
+                                        value={phone}
+                                        onChange={setPhone}
+                                        className="px-3 py-2 rounded border-2 focus:border-gray-500"
+                                        numberInputProps={{ className: "focus:outline-none" }}
+                                    />
+                                </div>
+                            </div>
 
 
-                            <div className="w-full lg:w-6/12 px-4">
-                                <div className="relative w-full mb-3">
+                            {/*<div className="px-4 w-full lg:w-6/12">
+                                <div className="mb-3 relative w-full">
 
                                     {Boolean(imageDisplay) ?
 
-                                        <div className="mt-4 border-2 w-8/12" >
-                                            <img src={imageDisplay} alt="Uploaded file preview" className="max-w-full h-auto p-2" />
+                                        <div className="mt-4 w-8/12 border-2" >
+                                            <img src={imageDisplay} alt="Uploaded file preview" className="p-2 h-auto max-w-full" />
                                         </div>
                                         : null
                                     }
 
                                 </div>
-                            </div>
+                            </div>*/}
                         </div>
 
-                        <div className="w-full px-4">
+                        <div className="px-4 w-full">
                             <Button
                                 disabled={loadingStatus ? true : false}
                                 variant="black"

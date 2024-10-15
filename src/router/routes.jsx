@@ -1,5 +1,6 @@
 import Login from "@/views/auth/login";
 import Register from "@/views/auth/register";
+import VerifyAccount from "@/views/auth/verifyAccount";
 import Dashboard from "@/views/dashboard/index";
 import Hotels from "@/views/hotels";
 import Availability from "@/views/availability";
@@ -21,12 +22,12 @@ const routes = [
         component: Login,
         isPublic: true,
     },
-  /*  {
+    {
         id: 3,
-        path: '/register/:useremail/:iid',
-        component: Register,
+        path: '/verify-account',
+        component: VerifyAccount,
         isPublic: true,
-    },*/
+    },
     {
         id: 4,
         path: '/register',
