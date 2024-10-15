@@ -1,6 +1,7 @@
 ﻿//import Compressor from 'compressorjs';
 import secureLocalStorage from "react-secure-storage";
 import CryptoJS from "crypto-js";
+import { post } from 'aws-amplify/api';
 
 export function isVallidImageFile(image) {
     let imgType = image.type;
@@ -106,24 +107,15 @@ export async function getFileUrl(file, callback) {
 
 export function logedInUserId() {
     const userData = secureLocalStorage.getItem('userData');
-    if (userData) {
-        const parsedUserData = (userData) ? JSON.parse(userData).userId : "0";
-        return parsedUserData;
-    } else {
-        const adminData = JSON.parse(secureLocalStorage.getItem('adminData'));
-        const parsedAdminData = (adminData) ? JSON.parse(adminData).userId : "0";
-        return parsedAdminData;
-    }
+
+    const parsedUserData = (userData) ? JSON.parse(userData).userId : "0";
+    return parsedUserData;
+
 }
 
 export function logedInUser() {
     const userData = JSON.parse(secureLocalStorage.getItem('userData'));
-    if (userData) {
-        return userData;
-    } else {
-        const adminData = JSON.parse(secureLocalStorage.getItem('adminData'));
-        return adminData;
-    }
+    return userData;
 }
 
 export function encryptData(string) {
@@ -138,6 +130,84 @@ export function decryptData(string) {
 
     return decipherText
 }
+
+export const sendWelcomeEmail = async (userData) => {
+    const toEmail = userData?.email;
+    const message = `<!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                      <meta charset="UTF-8">
+                      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                      <title>Registration Confirmation</title>
+                    </head>
+                    <body style="font-family: Arial, sans-serif;">
+                    
+                     <table cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                        <tr>
+                          <td style="background-color: #f8f8f8; padding: 20px;">
+                            <h2>Welcome to <span style="color: #3D75F0;">Travelom</span>!</h2>
+                            <p>Dear ${userData?.firstName} ${userData?.lastName},</p>
+                            <p>Thank you for registering with us. Your account has been successfully created.</p>
+                            <p>Your login details:</p>
+                            <ul>
+                              <li><strong>Email:</strong> ${userData?.email}</li>
+                            </ul>
+                            <p>We're thrilled to have you join our community. Feel free to explore our website and start planning your next trip!</p>
+                            <p>If you have any questions or need assistance, don't hesitate to contact us.</p>
+                            <p>Best regards,<br><span style="color: #3D75F0;">Travelom</span></p>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td style="background-color: #333; color: #fff; padding: 10px; text-align: center;">
+                            &copy; 2024 TravelOm. All rights reserved.
+                          </td>
+                        </tr>
+                      </table>
+                    
+                    </body>
+                    </html>`;
+    const subject = "Welcome to TravelOm!";
+
+    // Without Attachment:
+    await sendEmail(toEmail, message, subject, true, null, (res) => {
+        console.log("sendEmail response>> ", res)
+    });
+};
+
+export const sendEmail = async (toEmail, message, subject, isHtmlContent, attachments, callBack) => {
+    try {
+        let bodyData = {
+            toEmail: toEmail,
+            message: message,
+            subject: subject,
+            isHtmlContent: isHtmlContent,
+            attachments: attachments
+        };
+        
+        if (attachments !== null) {
+            bodyData = {
+                ...bodyData,
+                attachments: attachments
+            };
+        }
+
+        const restOperation = post({
+            apiName: "appUtils",
+            path: "/sendEmail",
+            options: {
+                body: bodyData
+            }
+        });
+
+        const { body } = await restOperation.response;
+        const response = await body.json();
+        callBack(response);
+
+    } catch (e) {
+        console.log('sendEmail failed: ', JSON.parse(e?.response?.body));
+    }
+};
+
 
 class Helper {
     static isAuthenticated() {

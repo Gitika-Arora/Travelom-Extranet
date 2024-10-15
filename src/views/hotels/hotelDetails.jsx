@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/breadcrumb";
 
 import { NavLink } from 'react-router-dom';
-import { BreadCrumb as BreadCrumbPrime } from 'primereact/breadcrumb';
 
 import listData from "@/data/listData";
 import { InputText as Input } from "primereact/inputtext";
@@ -22,6 +21,8 @@ import { MultiSelect } from 'primereact/multiselect';
 import { FileUpload } from 'primereact/fileupload';
 import Helper from '@/services/helper';
 import { getHotels, listHotels } from "@/graphql/queries";
+//import { updateHotels } from '@/graphql/mutations';
+import * as mutations from '@/graphql/mutations';
 import { generateClient } from 'aws-amplify/data';
 import { uploadData } from 'aws-amplify/storage';
 import { Trash2 } from "lucide-react";
@@ -34,21 +35,19 @@ export default function HotelDetails() {
 
     const fileUploadRef = useRef();
 
-    const [hotel, setHotel] = useState();
     const [hotelDetails, setHotelDetails] = useState({});
     const [amenityOptions, setAmenityOptions] = useState([]);
     const [roomOptions, setRoomOptions] = useState([]);
-    const [exploreOptions, setExploreOptions] = useState([]);
     const [images, setImages] = useState([]);
 
     const [hotelName, setHotelName] = useState();
     const [overview, setOverview] = useState();
     const [amenities, setAmenities] = useState();
     const [address, setAddress] = useState();
-    const [rooms, setRooms] = useState();
-    const [attraction, setAttraction] = useState();
     const [city, setCity] = useState();
     const [hotelImages, setHotelImages] = useState([]);
+
+    const [allHotelData, setAllHotelData] = useState([]);
 
 
     useEffect(() => {
@@ -59,26 +58,19 @@ export default function HotelDetails() {
         console.log(hotelAmenity);
         setAmenityOptions(hotelAmenity);
         setRoomOptions(listData.staticData.rooms);
-        setExploreOptions(listData.staticData.explore);
-        listData.hotels.forEach(hotel => {
-            if (hotel.id == hid) {
-                console.log(hotel)
-                setHotel(hotel)
-            }
-        });
+        
         setHotelDetails(listData.hotelDetails)
 
         const client = generateClient();
 
         const response = await client.graphql({ query: getHotels, variables: { id: hid } });
 
-        // const hotelData = response.data.getHotels
+        const hotelData = { ...response.data?.getHotels, hotelDescriptiveContents: JSON.parse(response?.data?.getHotels?.hotelDescriptiveContents) };
 
-        console.log(response.data.getHotels);
+        setAllHotelData(hotelData)
 
-        const hotelData = { ...response.data.getHotels, hotelDescriptiveContents: JSON.parse(response.data.getHotels.hotelDescriptiveContents) };
-
-        console.log({ hotelData });
+        console.log(hotelData);
+        console.log({HotelInfo: hotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.HotelInfo});
 
         setHotelName(hotelData?.hotelName);
         setAddress(hotelData?.address);
@@ -88,32 +80,122 @@ export default function HotelDetails() {
         setOverview(descriptionData[0]?.Text?._text);
 
         const amenityData = hotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.HotelInfo?.Services?.Service.filter(data => {
-            console.log(data);
-            return data?._attributes?.Included === "true" && data?._attributes?.Code
+            return data?._attributes?.Code
         }).map(data => (JSON.parse(data?._attributes?.Code)))
 
-        console.log({ amenityData, hotelAmenity });
+        console.log("hotelAmenity", hotelAmenity );
+        console.log("amenityData", amenityData );
         setAmenities(amenityData)
 
         setHotelImages(hotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.MultimediaObjects?.MultimediaObject);
-        setAttraction(hotelData.hotelDescriptiveContents.hotelDescriptiveContent[0].areaInfo.attractions.attraction);
-        console.log({ hotelData });
-
-        console.log({ hotelImages: hotelData.hotelDescriptiveContents.hotelDescriptiveContent[0].multimediaObjects.multimediaObject });
     }
 
-    const handleImageClick = (index) => {
+    const handleImageClick = (imageData, index) => {
+
+        console.log(index);
         const updatedImages = hotelImages.filter((_, i) => index !== i);
+
         setHotelImages(updatedImages)
     }
 
-    const handleSubmit = e => {
+    function updateAmenitiesData(amenityOptions, amenityData, existingData) {
+        // Helper function to check if an entry already exists in existingData
+        const findInExistingData = (code) => {
+            return existingData.find(
+                (item) =>
+                    item._attributes.Code === String(code) &&
+                    !item._attributes.hasOwnProperty('BusinessServiceCode')
+            );
+        };
+
+        // Filter out entries from existingData that do not match amenityData
+        existingData = existingData?.filter(item => {
+            if (item._attributes.hasOwnProperty('BusinessServiceCode')) {
+                return true; // Keep BusinessServiceCode entries untouched
+            }
+            const code = parseInt(item._attributes.Code, 10);
+            return amenityData.includes(code); // Keep only items in amenityData
+        });
+
+        // Add new entries from amenityData if they don't already exist in existingData
+        amenityData.forEach((code) => {
+            const existingItem = findInExistingData(code);
+
+            if (!existingItem) {
+                existingData.push({
+                    _attributes: {
+                        ProximityCode: "",
+                        Included: true,
+                        Code: String(code),
+                    }
+                });
+            }
+        });
+
+        return existingData;
+    }
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        //console.log(fileUploadRef.current.getFiles())
 
-        console.log(fileUploadRef.current.getFiles())
+        console.log({ allHotelData: {...allHotelData} });
+
+        const existingAmenities = allHotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.HotelInfo?.Services?.Service
+
+        const updatedAmenitiesData = updateAmenitiesData(amenityOptions, amenities, existingAmenities);
+
+        const descriptionArray = allHotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.HotelInfo?.Descriptions?.Description?.map(data => {
+            if (data._attributes
+                .AdditionalDetailCode == 2) {
+                return {
+                    ...data, Text: { ...data.Text, _text: overview}
+                }
+            } else {
+                return data;
+            }
+        });
 
 
-        /*const file = event.target.files[0];
+        const hotelDescriptiveData = {
+            HotelDescriptiveContent: {
+                ...allHotelData?.hotelDescriptiveContents?.HotelDescriptiveContent,
+                HotelInfo: {
+                    ...allHotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.HotelInfo,
+                    Descriptions: {
+                        Description: descriptionArray
+                    },
+                    Services: {
+                        Service: updatedAmenitiesData
+                    }
+                }
+            }
+        };
+
+        console.log({ hotelDescriptiveData, allHotelData });
+
+        debugger;
+        const todoDetails = {
+            id: hid,
+            hotelName: hotelName,
+            address: address,
+            city: city,
+            hotelDescriptiveContents: JSON.stringify(hotelDescriptiveData)
+        };
+
+        const client = generateClient();
+
+        try {
+            const updatedTodo = await client.graphql({
+                query: mutations.updateHotels,
+                variables: { input: todoDetails }, // Ensure the body is a string
+            });
+            console.log("updatedTodo", updatedTodo);
+            alert("Hotel details updated successfully")
+        } catch (error) {
+            console.error("Error updating todo:", error);
+        }
+       /* const file = event.target.files[0];
         uploadData({
             path: file.name,
             data: file
@@ -148,14 +230,25 @@ export default function HotelDetails() {
                         </BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>
-                {/*<BreadCrumbPrime model={items} pt={{
-                    root: "bg-transparent border-none p-0"
-                }} />*/}
             </div>
             <div className="mt-6 mx-auto w-full">
                 <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-100 border-0 bg-white">
                     <form onSubmit={handleSubmit}>
                         <div className="flex-auto px-4 lg:px-6 py-6 pt-6">
+                            <div className="flex justify-end gap-3">
+                                <Button
+                                    type="button"
+                                    variant="cancel"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    type="submit"
+                                >
+                                    Save
+                                    {/* {loadingStatus && <LoaderCircle className="ml-1 h-6 w-6 animate-spin" />} */}
+                                </Button>
+                            </div>
                             <div className="flex flex-wrap">
                                 <div className="w-full px-4">
                                     <div className="relative w-full mb-3">
@@ -188,24 +281,15 @@ export default function HotelDetails() {
                                         <MultiSelect
                                             value={amenities}
                                             optionValue="Code"
+                                            optionLabel="HAC"
                                             onChange={(e) => setAmenities(e.value)}
                                             options={amenityOptions}
-                                            optionLabel="HAC"
                                             placeholder="Select Amenities"
                                             pt={{ root: "w-full md:w-full" }}
                                             virtualScrollerOptions={{ itemSize: 40 }}
                                         />
                                     </div>
                                 </div>
-                                {/*<div className="w-full px-4">
-                                    <div className="relative w-full mb-3">
-                                        <label className="block text-blueGray-600 text-lg  font-bold mb-2" >
-                                            Room Amenities
-                                        </label>
-                                        <MultiSelect value={hotelDetails?.explore} onChange={(e) => setHotelDetails({ ...hotelDetails, explore: e.value })} options={exploreOptions} optionLabel="attractionName"
-                                            placeholder="Select Rooms" pt={{ root: "w-full md:w-full" }} />
-                                    </div>
-                                </div>*/}
                                 <div className="w-full px-4">
                                     <div className="relative w-full mb-3">
                                         <label className="block text-blueGray-600 text-lg  font-bold mb-2">
@@ -248,7 +332,7 @@ export default function HotelDetails() {
                                                 <Image
                                                     src={imageData.URL._text}
                                                     alt="image"
-                                                    onClick={() => handleImageClick(imageData)}
+                                                    onClick={() => handleImageClick(imageData, i)}
                                                 />
                                             </div>
                                         })}

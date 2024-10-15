@@ -1,10 +1,10 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useHistory } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle, Eye, EyeOff, AtSign } from 'lucide-react';
 import secureLocalStorage from "react-secure-storage";
-import backgroundImage from "@/assets/images/top-view-weights-floor.avif";
+import backgroundImage from "@/../public/top-view-weights-floor.avif"
 
 function Login() {
     const history = useHistory();
@@ -48,12 +48,12 @@ function Login() {
 
     return (
         <div className="m-auto h-screen bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${backgroundImage})` }}>
-            <div className="h-screen mx-auto max-w-screen-xl px-4 py-24 sm:px-6 lg:px-8">
+            <div className="px-4 py-24 mx-auto h-screen max-w-screen-xl sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-sm">
-                    <form onSubmit={handleLogin} className="mb-0 mt-4 space-y-4 rounded-lg p-4 shadow-lg sm:p-6 lg:p-6 bg-white">
-                        <p className="text-center  font-medium text-3xl">Login</p>
+                    <form onSubmit={handleLogin} className="mb-0 mt-4 space-y-4 p-4 bg-white rounded-lg shadow-lg sm:p-6 lg:p-6">
+                        <p className="text-center text-3xl font-medium">Login</p>
                         <div>
-                            <label htmlFor="email" className="block text-blueGray-600 text-lg font-bold mb-2">Email Address</label>
+                            <label htmlFor="email" className="text-blueGray-600 mb-2 block text-lg font-bold">Email Address</label>
                             <div className="relative">
                                 <Input
                                     type="email"
@@ -62,7 +62,7 @@ function Login() {
                                     onChange={e => setEmail(e.target.value)}
                                     disabled={loadingStatus ? true : false}
                                 />
-                                <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
+                                <span className="inset-y-0 end-0 px-4 absolute grid place-content-center">
                                     <div className="size-4 text-gray-400">
                                         <AtSign size={18} color="#9ca3af" />
                                     </div>
@@ -71,7 +71,7 @@ function Login() {
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-blueGray-600 text-lg font-bold mb-2">Password</label>
+                            <label htmlFor="password" className="text-blueGray-600 mb-2 block text-lg font-bold">Password</label>
                             <div className="relative">
                                 <Input
                                     type={isPasswordShown ? "text" : "password"}
@@ -81,7 +81,7 @@ function Login() {
                                     autoComplete="on"
                                     disabled={loadingStatus ? true : false}
                                 />
-                                <span className="absolute inset-y-0 end-0 grid place-content-center px-4">
+                                <span className="inset-y-0 end-0 px-4 absolute grid place-content-center">
                                     <div
                                         className="size-4 text-gray-400 cursor-pointer"
                                         onClick={() => setPasswordShown(!isPasswordShown)}

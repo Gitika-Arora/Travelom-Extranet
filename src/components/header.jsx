@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import secureLocalStorage from "react-secure-storage";
 import { useHistory } from 'react-router-dom';
@@ -6,17 +6,11 @@ import { logedInUser } from '@/services/helper';
 
 function Header({ toggle, sidebarState }) {
     let history = useHistory();
-    const [adminData, setAdminData] = useState(true);
-    const [userData, setUserData] = useState(true);
     const logout = () => {
         secureLocalStorage.clear();
         window.location = '/login';
     };
     useEffect(() => {
-        const adminData = secureLocalStorage.getItem('adminData');
-        const userData = secureLocalStorage.getItem('userData');
-        setAdminData(JSON.parse(adminData))
-        setUserData(JSON.parse(userData))
     }, []);
 
     return (
@@ -31,14 +25,14 @@ function Header({ toggle, sidebarState }) {
                                     <path clipRule="evenodd" fillRule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
                                 </svg>
                             </button>
-                            <a className="flex ms-2 md:me-24">
-                                <span className="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap text-white">Travelom &#8209; Extranet</span>
+                            <a className="ms-2 flex md:me-24">
+                                <span className="text-white self-center whitespace-nowrap text-xl font-semibold sm:text-2xl">Travelom &#8209; Extranet</span>
                             </a>
                         </div>
                         <div className="flex items-center">
-                            <div className="flex items-center ms-3">
+                            <div className="ms-3 flex items-center">
                                 <div className="pr-5 text-white hidden md:block" >
-                                    Welcome {userData?.firstName || adminData?.firstName} {userData?.lastName || adminData?.lastName}
+                                    Welcome
                                 </div>
                                 <div className="pr-3">
                                     <Button type="button" onClick={logout} >
