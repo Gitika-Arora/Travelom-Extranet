@@ -1,5 +1,5 @@
 ﻿import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -33,6 +33,8 @@ export default function HotelDetails() {
 
     const { hid } = useParams();
 
+    const history = useHistory();
+
     const fileUploadRef = useRef();
 
     const [hotelDetails, setHotelDetails] = useState({});
@@ -55,7 +57,6 @@ export default function HotelDetails() {
     }, [])
 
     const getHotelData = async () => {
-        console.log(hotelAmenity);
         setAmenityOptions(hotelAmenity);
         setRoomOptions(listData.staticData.rooms);
         
@@ -69,9 +70,6 @@ export default function HotelDetails() {
 
         setAllHotelData(hotelData)
 
-        console.log(hotelData);
-        console.log({HotelInfo: hotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.HotelInfo});
-
         setHotelName(hotelData?.hotelName);
         setAddress(hotelData?.address);
         setCity(hotelData?.city);
@@ -83,8 +81,6 @@ export default function HotelDetails() {
             return data?._attributes?.Code
         }).map(data => (JSON.parse(data?._attributes?.Code)))
 
-        console.log("hotelAmenity", hotelAmenity );
-        console.log("amenityData", amenityData );
         setAmenities(amenityData)
 
         setHotelImages(hotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.MultimediaObjects?.MultimediaObject);
@@ -92,7 +88,6 @@ export default function HotelDetails() {
 
     const handleImageClick = (imageData, index) => {
 
-        console.log(index);
         const updatedImages = hotelImages.filter((_, i) => index !== i);
 
         setHotelImages(updatedImages)
@@ -139,8 +134,6 @@ export default function HotelDetails() {
         e.preventDefault();
         //console.log(fileUploadRef.current.getFiles())
 
-        console.log({ allHotelData: {...allHotelData} });
-
         const existingAmenities = allHotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.HotelInfo?.Services?.Service
 
         const updatedAmenitiesData = updateAmenitiesData(amenityOptions, amenities, existingAmenities);
@@ -172,9 +165,6 @@ export default function HotelDetails() {
             }
         };
 
-        console.log({ hotelDescriptiveData, allHotelData });
-
-        debugger;
         const todoDetails = {
             id: hid,
             hotelName: hotelName,
@@ -190,7 +180,6 @@ export default function HotelDetails() {
                 query: mutations.updateHotels,
                 variables: { input: todoDetails }, // Ensure the body is a string
             });
-            console.log("updatedTodo", updatedTodo);
             alert("Hotel details updated successfully")
         } catch (error) {
             console.error("Error updating todo:", error);
@@ -204,15 +193,9 @@ export default function HotelDetails() {
         //fileUploadRef.current.upload()
     }
 
-    const items = [
-        { label: 'Components' },
-        {
-            label: 'Hotels',
-            template: () => <NavLink to="/hotels" className="transition-colors hover:text-foreground">Hotels</NavLink>
-        },
-        { label: 'Hotel Details' },
-    ];
-    const home = { icon: 'pi pi-home', url: 'https://primereact.org' };
+    const handleCancleClick = () => {
+        history.push("/hotels")
+    }
 
     return (
         <div>
@@ -239,6 +222,7 @@ export default function HotelDetails() {
                                 <Button
                                     type="button"
                                     variant="cancel"
+                                    onClick={handleCancleClick}
                                 >
                                     Cancel
                                 </Button>
@@ -375,6 +359,7 @@ export default function HotelDetails() {
                                 <Button
                                     type="button"
                                     variant="cancel"
+                                    onClick={handleCancleClick}
                                 >
                                     Cancel
                                 </Button>

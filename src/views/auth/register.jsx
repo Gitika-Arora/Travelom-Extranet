@@ -1,15 +1,69 @@
 ﻿import { useState } from "react";
-import { useHistory } from 'react-router-dom';
+import { useHistory, NavLink } from 'react-router-dom';
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle, Eye, EyeOff, AtSign } from 'lucide-react';
-import backgroundImage from "@/../public/top-view-weights-floor.avif"
 import 'react-phone-number-input/style.css'
-import PhoneInput from 'react-phone-number-input'
+import PhoneInput, { isValidPhoneNumber } from 'react-phone-number-input'
 import { signUp, signIn, signOut } from 'aws-amplify/auth';
 import { generateClient } from 'aws-amplify/api';
 import { createUsers } from '@/graphql/mutations';
+import AuthHeader from "@/components/authHeader";
+import { Dropdown } from 'primereact/dropdown';
+
+const countryOptions = [
+    { label: "United States", value: "United States" },
+    { label: "China", value: "China" },
+    { label: "Russia", value: "Russia" },
+    { label: "India", value: "India" },
+    { label: "Germany", value: "Germany" },
+    { label: "United Kingdom", value: "United Kingdom" },
+    { label: "France", value: "France" },
+    { label: "Japan", value: "Japan" },
+    { label: "Brazil", value: "Brazil" },
+    { label: "Canada", value: "Canada" },
+    { label: "Australia", value: "Australia" },
+    { label: "South Korea", value: "South Korea" },
+    { label: "Saudi Arabia", value: "Saudi Arabia" },
+    { label: "Israel", value: "Israel" },
+    { label: "Turkey", value: "Turkey" },
+    { label: "Italy", value: "Italy" },
+    { label: "Mexico", value: "Mexico" },
+    { label: "South Africa", value: "South Africa" },
+    { label: "Indonesia", value: "Indonesia" },
+    { label: "Argentina", value: "Argentina" },
+    { label: "Nigeria", value: "Nigeria" },
+    { label: "Egypt", value: "Egypt" },
+    { label: "Pakistan", value: "Pakistan" },
+    { label: "Ukraine", value: "Ukraine" },
+    { label: "Iran", value: "Iran" },
+    { label: "Venezuela", value: "Venezuela" },
+    { label: "Spain", value: "Spain" },
+    { label: "Poland", value: "Poland" },
+    { label: "Bangladesh", value: "Bangladesh" },
+    { label: "Malaysia", value: "Malaysia" },
+    { label: "Colombia", value: "Colombia" },
+    { label: "Thailand", value: "Thailand" },
+    { label: "Vietnam", value: "Vietnam" },
+    { label: "Philippines", value: "Philippines" },
+    { label: "Netherlands", value: "Netherlands" },
+    { label: "Belgium", value: "Belgium" },
+    { label: "Sweden", value: "Sweden" },
+    { label: "Singapore", value: "Singapore" },
+    { label: "United Arab Emirates", value: "United Arab Emirates" },
+    { label: "Iraq", value: "Iraq" },
+    { label: "Kazakhstan", value: "Kazakhstan" },
+    { label: "Ethiopia", value: "Ethiopia" },
+    { label: "Chile", value: "Chile" },
+    { label: "Qatar", value: "Qatar" },
+    { label: "Norway", value: "Norway" },
+    { label: "Myanmar", value: "Myanmar" },
+    { label: "Kenya", value: "Kenya" },
+    { label: "Algeria", value: "Algeria" },
+    { label: "Sudan", value: "Sudan" },
+    { label: "Morocco", value: "Morocco" }
+];
 
 function Register() {
     const history = useHistory();
@@ -26,20 +80,11 @@ function Register() {
     const [hotelCode, setHotelCode] = useState("");
 
     const [address, setAddress] = useState("");
-    //const [addressLine2, setAddressLine2] = useState("");
     const [city, setCity] = useState("");
     const [pinCode, setPinCode] = useState("");
     const [country, setCountry] = useState("");
 
-
     const [loadingStatus, setLoadingStatus] = useState(false);
-
-    /*const [imageDisplay, setImageDisplay] = useState('');
-    const [files, setFiles] = useState({
-        image: null,
-    })*/
-
-
 
     function validateInputs() {
         let message = '';
@@ -47,14 +92,22 @@ function Register() {
         if (!hotelName || (hotelName && hotelName.trim() === "")) {
             message += "Please enter hotel name \n"
         }
+
+        if (!hotelCode || (hotelCode && hotelCode.trim() === "")) {
+            message += "Please enter hotel code \n"
+        }
+
         if (!firstName || (firstName && firstName.trim() === "")) {
             message += "Please enter first name \n"
         }
+
         if (!lastName || (lastName && lastName.trim() === "")) {
             message += "Please enter last name \n"
         }
 
-        if (!email || (email && email.trim() === "")) {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+        if (!email || (email && email.trim() === "") || !emailRegex.test(email)) {
             message += "Please enter email \n"
         }
 
@@ -68,32 +121,25 @@ function Register() {
             message += "Password & confirm password do not match \n";
         }
 
-        if (!phone || phone.trim() === "" || phone.length !== 13) {
-            message += "Please enter a valid 10-digit phone number\n";
-        }
-
         if (!address || (address && address.trim() === "")) {
             message += "Please enter address \n";
         }
-
-        /*if (!addressLine2 || (addressLine2 && addressLine2.trim() === "")) {
-            message += "Please enter address line 2 \n";
-        }*/
 
         if (!city || (city && city.trim() === "")) {
             message += "Please enter city \n";
         }
 
-        if (!pinCode || (pinCode && pinCode.trim() === "")) {
-            message += "Please enter pincode \n";
+        if (!country || (country && country.trim() === "")) {
+            message += "Please select country \n";
         }
 
+        if (!pinCode || (pinCode && pinCode.trim() === "")) {
+            message += "Please enter zipcode \n";
+        }
 
-        /*if (files.profilePic === null) {
-            if (profilePic === null || profilePic === "") {
-                message += "Please add profile image\n";
-            }
-        }*/
+        if (!phone || phone.trim() === "" || (phone && !isValidPhoneNumber(phone))) {
+            message += "Please enter phone number\n";
+        }
 
         if (message.trim().length > 0) {
             alert(message)
@@ -106,9 +152,6 @@ function Register() {
         e.preventDefault();
         let isValid = validateInputs();
         let isUserAlreadyExists = false;
-        /* const file_ext = files.profilePic.name.slice(
-             ((files.profilePic.name.lastIndexOf('.') - 1) >>> 0) + 2
-         );*/
 
         if (isValid) {
             setLoadingStatus(true)
@@ -147,8 +190,6 @@ function Register() {
 
                     });
 
-                    console.log(user)
-
                     const client = generateClient();
 
                     const userDetails = {
@@ -163,20 +204,18 @@ function Register() {
                         "zipCode": pinCode,
                         "country": country,
                         "address": address,
-                        //"addressLine2": addressLine2,
                         "isActive": true,
                         "isDeleted": false,
                         //"userType": 2
                     }
 
-                    const newUserData = await client.graphql({
+                    await client.graphql({
                         query: createUsers,
                         variables: { input: userDetails }
                     });
 
-                    //history.push("/login");
+                    alert("A link to verify your account has been sent to your email address")
 
-                    console.log({ user, newUserData, userDetails });
                 } catch (err) {
                     console.log('error signing up:', { err });
                     if (err.name === "UsernameExistsException") {
@@ -197,259 +236,239 @@ function Register() {
 
     return (
 
-        <div className="m-auto bg-cover bg-fixed bg-center bg-no-repeat" style={{ backgroundImage: `url(${backgroundImage})` }}>
+        <div
+            className="bg-black m-auto bg-opacity-75 bg-cover bg-fixed bg-center bg-no-repeat bg-blend-multiply"
+            style={{ backgroundImage: `url("/top-view-weights-floor.png")` }}
+        >
+            <div className="pt-5">
+                <AuthHeader />
+            </div>
 
             <div className="px-4 py-16 mx-auto max-w-screen-xl sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-xl">
-                    <form onSubmit={handleSignUp} className="mb-0 mt-6 space-y-4 p-4 bg-white rounded-lg shadow-lg sm:p-6 lg:p-8">
-                        <p className="text-center text-lg font-medium">Invite register</p>
+                    <div className="mb-0 mt-6 space-y-4 p-4 bg-white rounded-lg shadow-lg sm:p-6 lg:p-8">
+                        <form onSubmit={handleSignUp} >
+                            <p className="pb-3 text-center text-3xl font-medium">Register</p>
 
-                        <div className="flex flex-wrap">
-                            <div className="px-4 w-full">
-                                <div className="mb-3 relative w-full">
-                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
-                                        Hotel Name
-                                    </label>
-                                    <Input
-                                        type="text"
-                                        className="px-3 py-2"
-                                        value={hotelName}
-                                        onChange={e => setHotelName(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            <div className="px-4 w-full lg:w-6/12">
-                                <div className="mb-3 relative w-full">
-                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
-                                        First Name
-                                    </label>
-                                    <Input
-                                        type="text"
-                                        className="px-3 py-2"
-                                        value={firstName}
-                                        onChange={e => setFirstName(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            <div className="px-4 w-full lg:w-6/12">
-                                <div className="mb-3 relative w-full">
-                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
-                                        Last Name
-                                    </label>
-                                    <Input
-                                        type="text"
-                                        className="px-3 py-2"
-                                        value={lastName}
-                                        onChange={e => setLastName(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            <div className="px-4 w-full">
-                                <div className="mb-3 relative w-full">
-                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
-                                        Email Address
-                                    </label>
-                                    <div className="relative">
+                            <div className="flex flex-wrap">
+                                <div className="px-4 w-6/12">
+                                    <div className="mb-1 relative w-full">
+                                        <label className="text-blueGray-600 mb-1 text-md block font-bold">
+                                            Hotel Name
+                                        </label>
                                         <Input
-                                            type="email"
-                                            className="px-3 py-2"
-                                            value={email}
-                                            onChange={e => setEmail(e.target.value)}
-                                            autoComplete="email"
+                                            type="text"
+                                            className="px-2 py-1"
+                                            value={hotelName}
+                                            onChange={e => setHotelName(e.target.value)}
                                         />
-                                        <span className="inset-y-0 end-0 px-4 absolute grid place-content-center">
-                                            <div
-                                                className="size-4 text-gray-400"
-                                            >
-                                                <AtSign size={18} color="#9ca3af" />
-                                            </div>
-                                        </span>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="px-4 w-full lg:w-6/12">
-                                <div className="mb-3 relative w-full">
-                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
-                                        Password
-                                    </label>
-                                    <div className="relative">
+                                <div className="px-4 w-6/12">
+                                    <div className="mb-1 relative w-full">
+                                        <label className="text-blueGray-600 mb-1 text-md block font-bold">
+                                            Hotel Code
+                                        </label>
                                         <Input
-                                            type={passwordShow ? "text" : "password"}
-                                            className="px-3 py-2 pr-[40px]"
-                                            value={password}
-                                            onChange={e => setPassword(e.target.value)}
-                                            autoComplete="new-password"
+                                            type="text"
+                                            className="px-2 py-1"
+                                            value={hotelCode}
+                                            onChange={e => setHotelCode(e.target.value)}
                                         />
-                                        <span className="inset-y-0 end-0 px-4 absolute grid place-content-center">
-                                            <div
-                                                className="size-4 text-gray-400 cursor-pointer"
-                                                onClick={() => setPasswordShow(!passwordShow)}
-                                            >
-                                                {!passwordShow ? <EyeOff size={18} color="#9ca3af" /> : <Eye size={18} color="#9ca3af" />}
-                                            </div>
-                                        </span>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="px-4 w-full lg:w-6/12">
-                                <div className="mb-3 relative w-full">
-                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
-                                        Confirm Password
-                                    </label>
-                                    <div className="relative">
+                                <div className="px-4 w-full lg:w-6/12">
+                                    <div className="mb-1 relative w-full">
+                                        <label className="text-blueGray-600 mb-1 text-md block font-bold">
+                                            First Name
+                                        </label>
                                         <Input
-                                            type={confirmPasswordShow ? "text" : "password"}
-                                            className="px-3 py-2 pr-[40px]"
-                                            value={confirmPassword}
-                                            onChange={e => setConfirmPassword(e.target.value)}
-                                            autoComplete="new-password"
+                                            type="text"
+                                            className="px-2 py-1"
+                                            value={firstName}
+                                            onChange={e => setFirstName(e.target.value)}
                                         />
-                                        <span className="inset-y-0 end-0 px-4 absolute grid place-content-center">
-                                            <div
-                                                className="size-4 text-gray-400 cursor-pointer"
-                                                onClick={() => setConfirmPasswordShow(!confirmPasswordShow)}
-                                            >
-                                                {!confirmPasswordShow ? <EyeOff size={18} color="#9ca3af" /> : <Eye size={18} color="#9ca3af" />}
-                                            </div>
-                                        </span>
                                     </div>
                                 </div>
-                            </div>
-                            {/* <div className="px-4 w-full lg:w-6/12">
-                                <div className="mb-3 relative w-full">
-                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
-                                    Brand Code
-                                    </label>
-                                    <Input
-                                        type="text"
-                                        className="px-3 py-2"
-                                        value={brandCode}
-                                        onChange={e => setBrandCode(e.target.value)}
-                                    />
+                                <div className="px-4 w-full lg:w-6/12">
+                                    <div className="mb-1 relative w-full">
+                                        <label className="text-blueGray-600 mb-1 text-md block font-bold">
+                                            Last Name
+                                        </label>
+                                        <Input
+                                            type="text"
+                                            className="px-2 py-1"
+                                            value={lastName}
+                                            onChange={e => setLastName(e.target.value)}
+                                        />
+                                    </div>
                                 </div>
-                            </div> */}
-                            <div className="px-4 w-full">
-                                <div className="mb-3 relative w-full">
-                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
-                                        Hotel Code
-                                    </label>
-                                    <Input
-                                        type="text"
-                                        className="px-3 py-2"
-                                        value={hotelCode}
-                                        onChange={e => setHotelCode(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            <div className="px-4 w-full">
-                                <div className="mb-3 relative w-full">
-                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
-                                        Address
-                                    </label>
-                                    <Input
-                                        type="text"
-                                        className="px-3 py-2"
-                                        value={address}
-                                        onChange={e => setAddress(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            {/*<div className="px-4 w-full">
-                                <div className="mb-3 relative w-full">
-                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
-                                        Address Line 2
-                                    </label>
-                                    <Input
-                                        type="text"
-                                        className="px-3 py-2"
-                                        value={addressLine2}
-                                        onChange={e => setAddressLine2(e.target.value)}
-                                    />
-                                </div>
-                            </div>*/}
-                            <div className="px-4 w-full">
-                                <div className="mb-3 relative w-full">
-                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
-                                        City
-                                    </label>
-                                    <Input
-                                        type="text"
-                                        className="px-3 py-2"
-                                        value={city}
-                                        onChange={e => setCity(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            <div className="px-4 w-full">
-                                <div className="mb-3 relative w-full">
-                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
-                                        Pincode
-                                    </label>
-                                    <Input
-                                        type="text"
-                                        className="px-3 py-2"
-                                        value={pinCode}
-                                        onChange={e => setPinCode(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            <div className="px-4 w-full">
-                                <div className="mb-3 relative w-full">
-                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
-                                        Country
-                                    </label>
-                                    <Input
-                                        type="text"
-                                        className="px-3 py-2"
-                                        value={country}
-                                        onChange={e => setCountry(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            <div className="px-4 w-full">
-                                <div className="mb-3 relative w-full">
-                                    <label className="text-blueGray-600 mb-2 block text-lg font-bold">
-                                        Phone
-                                    </label>
-                                    <PhoneInput
-                                        international
-                                        defaultCountry="IN"
-                                        value={phone}
-                                        onChange={setPhone}
-                                        className="px-3 py-2 rounded border-2 focus:border-gray-500"
-                                        numberInputProps={{ className: "focus:outline-none" }}
-                                    />
-                                </div>
-                            </div>
-
-
-                            {/*<div className="px-4 w-full lg:w-6/12">
-                                <div className="mb-3 relative w-full">
-
-                                    {Boolean(imageDisplay) ?
-
-                                        <div className="mt-4 w-8/12 border-2" >
-                                            <img src={imageDisplay} alt="Uploaded file preview" className="p-2 h-auto max-w-full" />
+                                <div className="px-4 w-full">
+                                    <div className="mb-1 relative w-full">
+                                        <label className="text-blueGray-600 mb-1 text-md block font-bold">
+                                            Email Address
+                                        </label>
+                                        <div className="relative">
+                                            <Input
+                                                type="email"
+                                                className="px-2 py-1"
+                                                value={email}
+                                                onChange={e => setEmail(e.target.value)}
+                                                autoComplete="email"
+                                            />
+                                            <span className="inset-y-0 end-0 px-4 absolute grid place-content-center">
+                                                <div
+                                                    className="size-4 text-gray-400"
+                                                >
+                                                    <AtSign size={18} color="#9ca3af" />
+                                                </div>
+                                            </span>
                                         </div>
-                                        : null
-                                    }
-
+                                    </div>
                                 </div>
-                            </div>*/}
-                        </div>
+                                <div className="px-4 w-full lg:w-6/12">
+                                    <div className="mb-1 relative w-full">
+                                        <label className="text-blueGray-600 mb-1 text-md block font-bold">
+                                            Password
+                                        </label>
+                                        <div className="relative">
+                                            <Input
+                                                type={passwordShow ? "text" : "password"}
+                                                className="px-2 py-1 pr-[40px]"
+                                                value={password}
+                                                onChange={e => setPassword(e.target.value)}
+                                                autoComplete="new-password"
+                                            />
+                                            <span className="inset-y-0 end-0 px-4 absolute grid place-content-center">
+                                                <div
+                                                    className="size-4 text-gray-400 cursor-pointer"
+                                                    onClick={() => setPasswordShow(!passwordShow)}
+                                                >
+                                                    {!passwordShow ? <EyeOff size={18} color="#9ca3af" /> : <Eye size={18} color="#9ca3af" />}
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="px-4 w-full lg:w-6/12">
+                                    <div className="mb-1 relative w-full">
+                                        <label className="text-blueGray-600 mb-1 text-md block font-bold">
+                                            Confirm Password
+                                        </label>
+                                        <div className="relative">
+                                            <Input
+                                                type={confirmPasswordShow ? "text" : "password"}
+                                                className="px-2 py-1 pr-[40px]"
+                                                value={confirmPassword}
+                                                onChange={e => setConfirmPassword(e.target.value)}
+                                                autoComplete="new-password"
+                                            />
+                                            <span className="inset-y-0 end-0 px-4 absolute grid place-content-center">
+                                                <div
+                                                    className="size-4 text-gray-400 cursor-pointer"
+                                                    onClick={() => setConfirmPasswordShow(!confirmPasswordShow)}
+                                                >
+                                                    {!confirmPasswordShow ? <EyeOff size={18} color="#9ca3af" /> : <Eye size={18} color="#9ca3af" />}
+                                                </div>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="px-4 w-full">
+                                    <div className="mb-1 relative w-full">
+                                        <label className="text-blueGray-600 mb-1 text-md block font-bold">
+                                            Address
+                                        </label>
+                                        <Input
+                                            type="text"
+                                            className="px-2 py-1"
+                                            value={address}
+                                            onChange={e => setAddress(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="px-4 w-1/2">
+                                    <div className="mb-1 relative w-full">
+                                        <label className="text-blueGray-600 mb-1 text-md block font-bold">
+                                            City
+                                        </label>
+                                        <Input
+                                            type="text"
+                                            className="px-2 py-1"
+                                            value={city}
+                                            onChange={e => setCity(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="px-4 w-1/2">
+                                    <div className="mb-1 relative w-full">
+                                        <label className="text-blueGray-600 mb-1 text-md block font-bold">
+                                            Country
+                                        </label>
+                                        {/*<Input
+                                            type="text"
+                                            className="px-2 py-1"
+                                            value={country}
+                                            onChange={e => setCountry(e.target.value)}
+                                        />*/}
+                                        <Dropdown value={country} onChange={(e) => setCountry(e.value)} options={countryOptions} virtualScrollerOptions={{ itemSize: 38 }}
+                                            placeholder="Select Country" className="w-full" pt={{
+                                                root: "border-2 border-slate-200 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-base focus:outline-none focus:border-gray-500  w-full ease-linear transition-all duration-150 file:bg-gray-200 file:border-0 file:me-4 file:py-2 file:px-2 dark:file:bg-neutral-700 dark:file:text-neutral-400 hover:border-slate-200",
+                                                input: "px-2 py-1",
+                                                panel: "max-h-[200px] overflow-auto bg-white text-gray-700 border-0 rounded-md shadow-lg",
+                                                item: "flex items-center",
+                                                list: "p-0"
+                                            }} />
+                                    </div>
+                                </div>
+                                <div className="px-4 w-1/2">
+                                    <div className="mb-1 relative w-full">
+                                        <label className="text-blueGray-600 mb-1 text-md block font-bold">
+                                            Zipcode
+                                        </label>
+                                        <Input
+                                            type="text"
+                                            className="px-2 py-1"
+                                            value={pinCode}
+                                            onChange={e => setPinCode(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="px-4 w-1/2">
+                                    <div className="mb-1 relative w-full">
+                                        <label className="text-blueGray-600 mb-1 text-md block font-bold">
+                                            Phone
+                                        </label>
+                                        <PhoneInput
+                                            international
+                                            defaultCountry="IN"
+                                            countryCallingCodeEditable={false}
+                                            value={phone}
+                                            onChange={setPhone}
+                                            className="px-2 py-1 rounded border-2 focus:border-gray-500"
+                                            numberInputProps={{ className: "focus:outline-none" }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
 
-                        <div className="px-4 w-full">
-                            <Button
-                                disabled={loadingStatus ? true : false}
-                                variant="black"
-                                type="submit"
-                                className="w-full"
-                            >
-                                {loadingStatus && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
-                                Register
-                            </Button>
+                            <div className="px-4 mt-12 w-full">
+                                <Button
+                                    disabled={loadingStatus ? true : false}
+                                    type="submit"
+                                    className="w-full"
+                                >
+                                    {loadingStatus && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
+                                    Get Started
+                                </Button>
+                            </div>
+                        </form>
+                        <div className="flex justify-center">
+                            Already have an account? &nbsp;<NavLink to="/login" className="text-primary">
+                                Log in
+                            </NavLink>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
 
