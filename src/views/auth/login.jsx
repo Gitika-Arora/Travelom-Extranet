@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { LoaderCircle, Eye, EyeOff, AtSign } from 'lucide-react';
 import secureLocalStorage from "react-secure-storage";
-import backgroundImage from "@/../public/top-view-weights-floor.avif"
+import AuthHeader from "@/components/authHeader";
 
 function Login() {
     const history = useHistory();
@@ -47,11 +47,20 @@ function Login() {
     }
 
     return (
-        <div className="m-auto h-screen bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${backgroundImage})` }}>
+        <div
+            className="bg-black m-auto bg-opacity-75 bg-cover bg-fixed bg-center bg-no-repeat bg-blend-multiply"
+            style={{ backgroundImage: `url("/top-view-weights-floor.png")` }}
+        >
+
+            <div className="pt-5">
+                <AuthHeader />
+            </div>
+
             <div className="px-4 py-24 mx-auto h-screen max-w-screen-xl sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-sm">
-                    <form onSubmit={handleLogin} className="mb-0 mt-4 space-y-4 p-4 bg-white rounded-lg shadow-lg sm:p-6 lg:p-6">
-                        <p className="text-center text-3xl font-medium">Login</p>
+                    <div className="mb-0 mt-4 space-y-4 p-4 bg-white rounded-lg shadow-lg sm:p-6 lg:p-6">
+                    <form onSubmit={handleLogin}>
+                        <p className="pb-3 text-center text-3xl font-medium">Login</p>
                         <div>
                             <label htmlFor="email" className="text-blueGray-600 mb-2 block text-lg font-bold">Email Address</label>
                             <div className="relative">
@@ -95,13 +104,13 @@ function Login() {
                         <Button
                             disabled={loadingStatus ? true : false}
                             type="submit"
-                            className="w-full"
-                            variant="black"
+                            className="mt-10 w-full"
                         >
                             {loadingStatus && <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />}
                             Login
                         </Button>
                     </form>
+                    </div>
                 </div>
             </div>
         </div>

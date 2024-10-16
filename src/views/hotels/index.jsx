@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import ReactTable from "@/components/reactTable";
+﻿import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -8,17 +7,12 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdownMenu";
 import { DotsVerticalIcon } from "@radix-ui/react-icons";
-//import { createorUpdateDocument, getFirstBatch, getNextBatch } from '../../services/helperFirebase';
-import helper, { logedInUser } from '../../services/helper'
 import InfiniteScroll from "react-infinite-scroll-component";
 import { LoaderCircle } from 'lucide-react';
 import { useHistory } from 'react-router-dom';
-import listData from "@/data/listData";
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { getHotels, listHotels } from "@/graphql/queries";
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, GetCommand } from "@aws-sdk/lib-dynamodb";
+import { listHotels } from "@/graphql/queries";
 
 import { generateClient } from 'aws-amplify/data';
 import { get } from 'aws-amplify/api';
@@ -37,36 +31,6 @@ export default function Hotels() {
     async function getUserdata() {
 
         setLoading(true);
-
-        /*const docClient = DynamoDBDocumentClient.from(new DynamoDBClient({
-            region: "us-east-1",
-        }));
-
-
-        const queryParams = {
-            TableName: "Hotels-yurgf6c35fhvjaigpmzlhhjosa-staging",
-            ExclusiveStartKey: null
-        };
-
-        try {
-            const response = await docClient.send(new GetCommand(queryParams));
-            console.log(response);
-        } catch (error) {
-            console.error("Error querying DynamoDB:", error);
-        }*/
-
-        // rest api call from amplify package
-        /*try {
-            const restOperation = get({
-                apiName: 'listHotels',
-                path: '/listHotels'
-            });
-
-            const response = await restOperation.response;
-            console.log('GET call succeeded: ', response);
-        } catch (e) {
-            console.log('GET call failed: ', JSON.parse(e));
-        }*/
 
         // rest api call from axios
         let config = {
@@ -102,16 +66,8 @@ export default function Hotels() {
         const response = await client.graphql({ query: listHotels, variables });
 
         const items = response.data.listHotels.items
-        console.log(items);
 
         const hotels = items.map(item => ({ ...item, hotelDescriptiveContents: JSON.parse(item.hotelDescriptiveContents)}))
-
-        //const hotelsData = await client.graphql({ query: getHotels, variables: { id: "d4df6639-dc18-46a1-b79d-670b5f014405"} });
-
-        console.log({
-            hotels, 
-            //hotelsData
-        });
 
         setHotelsList(hotels)
         setLoading(false)
@@ -125,7 +81,7 @@ export default function Hotels() {
     return (
         <div className="t-4 mx-auto max-w-full">
 
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold">Hotels</h1>
             </div>
 
@@ -143,7 +99,7 @@ export default function Hotels() {
                     ((jsonData.length > 10) && <p className="text-center">
                         <b>Yay! You have seen it all</b>
                     </p>) :
-                    (<div className="flex justify-center p-5">
+                    (<div className="p-5 flex justify-center">
                         <span>No results</span>
                         </div>)
                         }
@@ -163,54 +119,12 @@ export default function Hotels() {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={() => {console.log(rowData); history.push(`/hotels/${rowData.id}`)}}>Details</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => { history.push(`/hotels/${rowData.id}`) }}>Details</DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>)}
                         header="Actions"
                         style={{ width: '20%' }}></Column>
                 </DataTable>
-
-                {/* <ReactTable
-                    data={jsonData}
-                    columns={[
-                        {
-                            accessor: "date",
-                            Header: "REGISTER ON",
-                        },
-                        {
-                            accessor: "firstName",
-                            Header: "FIRST NAME",
-                        },
-                        {
-                            accessor: "lastName",
-                            Header: "LAST NAME",
-                        },
-                        {
-                            accessor: "email",
-                            Header: "EMAIL",
-                        },
-                        {
-                            id: "actions",
-                            enableHiding: false,
-                            Header: "ACTION",
-                            Cell: ({ row }) => {
-                                const data = row.original;
-                                return (
-                                    <DropdownMenu modal={false}>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                                <DotsVerticalIcon className="h-4 w-4" />
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem>Remove</DropdownMenuItem>
-
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                );
-                            },
-                        },
-                    ]} /> */}
                 {/*</InfiniteScroll>*/}
             </div>
         </div>

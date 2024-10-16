@@ -9,17 +9,10 @@ import secureLocalStorage from "react-secure-storage";
 import { confirmSignUp } from "aws-amplify/auth";
 import { sendWelcomeEmail } from "@/services/helper";
 import { LoaderCircle } from 'lucide-react';
-import { Card } from 'primereact/card';
-/*import {
-    Card,
-    CardContent,
-} from "@/components/ui/card"*/
 
 const client = generateClient();
 
 export default function VerifyAccount() {
-    const [decodedData, setDecodedData] = useState("");
-    const [decodedCode, setDecodedCode] = useState("");
     const [loading, setLoading] = useState(true);
     const [alreadyConfirm, setAlreadyConfirm] = useState(false);
 
@@ -32,16 +25,12 @@ export default function VerifyAccount() {
             const decodedData = decodeURIComponent(data);
             const decodedCode = decodeURIComponent(code);
             confirmSignUpUser(decodedData, decodedCode);
-            setDecodedData(decodedData);
-            setDecodedCode(decodedCode);
         }
     }, []);
 
     const confirmSignUpUser = async (username, code) => {
         try {
-            debugger;
             const decodedHeader = jwtDecode(username, { header: true });
-            const userId = JSON.stringify(decodedHeader);
             let userData = Object.assign(decodedHeader);
 
             if (userData) {
@@ -62,7 +51,6 @@ export default function VerifyAccount() {
                         variables: { id: userData?.userName },
                     });
 
-                    console.log(bookingHistoryData)
                     if (bookingHistoryData.data.getUsers !== undefined) {
                         let data = bookingHistoryData.data.getUsers;
                         
@@ -83,32 +71,41 @@ export default function VerifyAccount() {
     };
 
     const updateUserToDB = async (updateValue) => {
+        try {
         const result = await client.graphql({
             query: updateUsers,
             variables: {
                 input: updateValue
             }
         });
-
-        console.log(result);
+        } catch (error) {
+            console.log(error);
+        }
     };
 
     return (
-        <div className="flex h-screen w-screen items-center justify-center">
-            <div className="">
-                <Card className="m-2 p-3 flex justify-center">
-                    {loading ? <LoaderCircle className="animate-spin" />
-                            :
-                        <div className="px-0 py-5 text-center">
-                            <h4>
-                                {alreadyConfirm ? "User Already Verified" : "Account Verify Successfully"}
-                            </h4>
-                            <h4>
-                                <Link className="underline" to="/">Click here</Link> to login
-                            </h4>
-                        </div>
-                    }
-                </Card>
+        <div
+            className="bg-black m-auto bg-opacity-75 bg-cover bg-fixed bg-center bg-no-repeat bg-blend-multiply"
+            style={{ backgroundImage: `url("/top-view-weights-floor.png")` }}
+        >
+            <div className="px-4 py-24 mx-auto h-screen max-w-screen-xl sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-sm">
+                    <div className="mb-0 mt-4 space-y-4 p-4 bg-white rounded-lg shadow-lg sm:p-6 lg:p-6">
+                        <p className="flex items-center justify-center text-center text-xl font-medium">
+                            {loading ? <LoaderCircle className="animate-spin" />
+                                :
+                                <div className="px-0 py-5 text-center">
+                                    <h4>
+                                        {alreadyConfirm ? "User Already Verified" : "Account Verify Successfully"}
+                                    </h4>
+                                    <h4>
+                                        <Link className="underline" to="/">Click here</Link> to login
+                                    </h4>
+                                </div>
+                            }
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     )
