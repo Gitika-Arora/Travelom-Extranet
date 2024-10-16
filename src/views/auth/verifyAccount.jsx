@@ -85,7 +85,7 @@ export default function VerifyAccount() {
 
     return (
         <div
-            className="bg-black m-auto bg-opacity-75 bg-cover bg-fixed bg-center bg-no-repeat bg-blend-multiply"
+            className="bg-black m-auto bg-opacity-40 bg-cover bg-fixed bg-center bg-no-repeat bg-blend-multiply"
             style={{ backgroundImage: `url("/top-view-weights-floor.png")` }}
         >
             <div className="px-4 py-24 mx-auto h-screen max-w-screen-xl sm:px-6 lg:px-8">

@@ -21,7 +21,9 @@ export default function AuthHeader({ toggle, sidebarState }) {
                 <div className="px-3 py-3 lg:px-5 lg:pl-3">
                     <div className="flex items-center justify-around">
                         <div className="w-40 flex items-center justify-start rtl:justify-end">
-                            <img src={Logo} />
+                            <NavLink to="/" className="gap-2 flex flex-nowrap">
+                                <img src={Logo} />
+                            </NavLink>
                         </div>
                         <div className="text-white flex items-center">
                             <div className="ms-3 flex items-center">
