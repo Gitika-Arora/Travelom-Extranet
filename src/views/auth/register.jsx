@@ -237,7 +237,7 @@ function Register() {
     return (
 
         <div
-            className="bg-black m-auto bg-opacity-75 bg-cover bg-fixed bg-center bg-no-repeat bg-blend-multiply"
+            className="bg-black m-auto bg-opacity-40 bg-cover bg-fixed bg-center bg-no-repeat bg-blend-multiply"
             style={{ backgroundImage: `url("/top-view-weights-floor.png")` }}
         >
             <div className="pt-5">
@@ -248,7 +248,7 @@ function Register() {
                 <div className="mx-auto max-w-xl">
                     <div className="mb-0 mt-6 space-y-4 p-4 bg-white rounded-lg shadow-lg sm:p-6 lg:p-8">
                         <form onSubmit={handleSignUp} >
-                            <p className="pb-3 text-center text-3xl font-medium">Register</p>
+                            <p className="pb-8 text-center text-3xl font-medium">Register</p>
 
                             <div className="flex flex-wrap">
                                 <div className="px-4 w-6/12">

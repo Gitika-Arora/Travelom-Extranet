@@ -48,7 +48,7 @@ function Login() {
 
     return (
         <div
-            className="bg-black m-auto bg-opacity-75 bg-cover bg-fixed bg-center bg-no-repeat bg-blend-multiply"
+            className="bg-black m-auto h-screen bg-opacity-40 bg-cover bg-fixed bg-center bg-no-repeat bg-blend-multiply"
             style={{ backgroundImage: `url("/top-view-weights-floor.png")` }}
         >
 
@@ -56,13 +56,13 @@ function Login() {
                 <AuthHeader />
             </div>
 
-            <div className="px-4 py-24 mx-auto h-screen max-w-screen-xl sm:px-6 lg:px-8">
+            <div className="px-4 pt-24 mx-auto max-w-screen-xl sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-sm">
                     <div className="mb-0 mt-4 space-y-4 p-4 bg-white rounded-lg shadow-lg sm:p-6 lg:p-6">
                     <form onSubmit={handleLogin}>
-                        <p className="pb-3 text-center text-3xl font-medium">Login</p>
+                        <p className="pb-8 text-center text-3xl font-medium">Login</p>
                         <div>
-                            <label htmlFor="email" className="text-blueGray-600 mb-2 block text-lg font-bold">Email Address</label>
+                                <label htmlFor="email" className="text-blueGray-600 mb-2 text-md block font-bold">Email Address</label>
                             <div className="relative">
                                 <Input
                                     type="email"
@@ -80,7 +80,7 @@ function Login() {
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="text-blueGray-600 mb-2 block text-lg font-bold">Password</label>
+                                <label htmlFor="password" className="text-blueGray-600 mb-2 text-md block font-bold">Password</label>
                             <div className="relative">
                                 <Input
                                     type={isPasswordShown ? "text" : "password"}
