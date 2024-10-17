@@ -2,15 +2,13 @@
 import { Link } from "react-router-dom";
 import { getUsers } from '@/graphql/queries';
 import { updateUsers } from '@/graphql/mutations';
-import { generateClient } from 'aws-amplify/api';
 import { jwtDecode } from "jwt-decode";
-
 import secureLocalStorage from "react-secure-storage";
 import { confirmSignUp } from "aws-amplify/auth";
-import { sendWelcomeEmail } from "@/services/helper";
+import helper, { sendWelcomeEmail } from "@/services/helper";
 import { LoaderCircle } from 'lucide-react';
 
-const client = generateClient();
+const client = helper.amplifyClient();
 
 export default function VerifyAccount() {
     const [loading, setLoading] = useState(true);
@@ -91,7 +89,7 @@ export default function VerifyAccount() {
             <div className="px-4 py-24 mx-auto h-screen max-w-screen-xl sm:px-6 lg:px-8">
                 <div className="mx-auto max-w-sm">
                     <div className="mb-0 mt-4 space-y-4 p-4 bg-white rounded-lg shadow-lg sm:p-6 lg:p-6">
-                        <p className="flex items-center justify-center text-center text-xl font-medium">
+                        <div className="flex items-center justify-center text-center text-xl font-medium">
                             {loading ? <LoaderCircle className="animate-spin" />
                                 :
                                 <div className="px-0 py-5 text-center">
@@ -103,7 +101,7 @@ export default function VerifyAccount() {
                                     </h4>
                                 </div>
                             }
-                        </p>
+                        </div>
                     </div>
                 </div>
             </div>

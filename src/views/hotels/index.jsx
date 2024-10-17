@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -13,6 +13,7 @@ import { useHistory } from 'react-router-dom';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { listHotels } from "@/graphql/queries";
+import { list_Hotels } from "@/services/customQueries";
 
 import { generateClient } from 'aws-amplify/data';
 import { get } from 'aws-amplify/api';
@@ -33,7 +34,7 @@ export default function Hotels() {
         setLoading(true);
 
         // rest api call from axios
-        let config = {
+        /*let config = {
             method: 'get',
             url: 'https://dca1hl4r89.execute-api.us-east-1.amazonaws.com/default/test-lambda',
             headers: {
@@ -48,7 +49,7 @@ export default function Hotels() {
         }
         catch (error) {
             console.log(error);
-        }
+        }*/
 
         const client = generateClient();
 
@@ -62,14 +63,11 @@ export default function Hotels() {
                 },
             }
         }
-
-        const response = await client.graphql({ query: listHotels, variables });
+        const response = await client.graphql({ query: list_Hotels, variables });
 
         const items = response.data.listHotels.items
 
-        const hotels = items.map(item => ({ ...item, hotelDescriptiveContents: JSON.parse(item.hotelDescriptiveContents)}))
-
-        setHotelsList(hotels)
+        setHotelsList(items)
         setLoading(false)
     }
 
@@ -105,11 +103,11 @@ export default function Hotels() {
                         }
             >*/}
 
-                <DataTable value={hotelsList} loading={loading} loadingIcon={<div className="mt-28"><LoaderCircle className="h-6 w-6 animate-spin" /></div>} removableSort emptyMessage={<div className="flex justify-center">No results</div>}>
-                    <Column field="hotelName" header="Hotel Name" sortable style={{ width: '20%' }}></Column>
-                    <Column field="hotelCode" header="Hotel Code" sortable style={{ width: '20%' }}></Column>
-                    <Column field="brandCode" header="Brand Code" style={{ width: '20%' }}></Column>
-                    <Column field="city" header="City" style={{ width: '20%' }}></Column>
+                <DataTable value={hotelsList} loading={loading} loadingIcon={<div className="mt-28"><LoaderCircle className="h-6 w-6 animate-spin" /></div>} onRowClick={(row) => { history.push(`/hotels/${row.data.id}`) }} removableSort emptyMessage={<div className="flex justify-center">No results</div>}>
+                    <Column field="hotelName" header="Hotel Name" sortable style={{ width: '20%', cursor: "pointer" }}></Column>
+                    <Column field="hotelCode" header="Hotel Code" sortable style={{ width: '20%', cursor: "pointer" }}></Column>
+                    <Column field="brandCode" header="Brand Code" style={{ width: '20%', cursor: "pointer" }}></Column>
+                    <Column field="city" header="City" style={{ width: '20%', cursor: "pointer" }}></Column>
                     {/*<Column field="phone" header="Phone" style={{ width: '20%' }}></Column>*/}
                     <Column
                         body={(rowData, column) => (<DropdownMenu modal={false}>

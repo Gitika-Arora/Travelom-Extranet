@@ -8,7 +8,7 @@ import HotelDetails from "@/views/hotels/hotelDetails";
 // --------------------images--------------
 
 import DashboardIcon from "../assets/images/DashboardIcon.png"
-import { User, House, Users as UsersIcon, Newspaper, ShoppingCart, Dumbbell, CircleUserRound, Send, History } from 'lucide-react';
+import { User, House, Users as UsersIcon, Newspaper, ShoppingCart, Dumbbell, CircleUserRound, Send, History, Hotel } from 'lucide-react';
 const routes = [
     {
         id: 1,
@@ -49,11 +49,22 @@ const routes = [
         component: Hotels,
         name: "Hotels",
         isPublic: false,
-        icon: <User size={20} />,
-        isInSidebar: true
+        icon: <Hotel size={20} />,
+        isInSidebar: true,
+        isAdmin: true
     },
     {
         id: 7,
+        path: '/hotels-details',
+        component: HotelDetails,
+        name: "Hotel Information",
+        isPublic: false,
+        icon: <Hotel size={20} />,
+        isInSidebar: true,
+        isHotelOwner: true
+    },
+    {
+        id: 8,
         path: '/availability',
         component: Availability,
         //name: "Booking History",
@@ -70,6 +81,7 @@ const routes = [
         name: "hotelDetails",
         isPublic: false,
         icon: <User size={20} />,
+        isAdmin: true
     },
 ]
 export default routes;

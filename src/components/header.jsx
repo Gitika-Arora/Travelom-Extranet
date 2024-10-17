@@ -1,16 +1,19 @@
 ﻿import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import secureLocalStorage from "react-secure-storage";
+import helper from "@/services/helper";
 import { useHistory } from 'react-router-dom';
 import { logedInUser } from '@/services/helper';
 
 function Header({ toggle, sidebarState }) {
+
     let history = useHistory();
+    const [userName, setUserName] = useState("");
     const logout = () => {
-        secureLocalStorage.clear();
+        helper.Logout();
         window.location = '/login';
     };
     useEffect(() => {
+        setUserName(logedInUser().firstName);
     }, []);
 
     return (
@@ -32,7 +35,7 @@ function Header({ toggle, sidebarState }) {
                         <div className="flex items-center">
                             <div className="ms-3 flex items-center">
                                 <div className="pr-5 text-white hidden md:block" >
-                                    Welcome
+                                    Welcome {userName}
                                 </div>
                                 <div className="pr-3">
                                     <Button type="button" onClick={logout} >
