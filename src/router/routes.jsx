@@ -57,7 +57,7 @@ const routes = [
         id: 7,
         path: '/hotels-details',
         component: HotelDetails,
-        name: "Hotels Details",
+        name: "Hotel Information",
         isPublic: false,
         icon: <Hotel size={20} />,
         isInSidebar: true,

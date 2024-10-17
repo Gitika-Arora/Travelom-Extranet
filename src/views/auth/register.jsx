@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useHistory, NavLink } from 'react-router-dom';
 
 import { Input } from "@/components/ui/input";
@@ -166,7 +166,7 @@ function Register() {
                     if (err.name === "UserNotFoundException") {
                         isUserAlreadyExists = false;
                     } else if (err.name === "NotAuthorizedException") {
-                        if (err.message === "Incorrect username or password.") isUserAlreadyExists = true;
+                        if (err.message === "Invalid email address or password. Please try again.") isUserAlreadyExists = true;
                     }
                 });
 

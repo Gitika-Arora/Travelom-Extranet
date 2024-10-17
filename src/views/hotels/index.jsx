@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -103,11 +103,11 @@ export default function Hotels() {
                         }
             >*/}
 
-                <DataTable onRowClick={(row) => { history.push(`/hotels/${row.data.id}`) }} value={hotelsList} loading={loading} loadingIcon={<div className="mt-28"><LoaderCircle className="h-6 w-6 animate-spin" /></div>} removableSort emptyMessage={<div className="flex justify-center">No results</div>}>
-                    <Column field="hotelName" header="Hotel Name" sortable style={{ width: '20%' }}></Column>
-                    <Column field="hotelCode" header="Hotel Code" sortable style={{ width: '20%' }}></Column>
-                    <Column field="brandCode" header="Brand Code" style={{ width: '20%' }}></Column>
-                    <Column field="city" header="City" style={{ width: '20%' }}></Column>
+                <DataTable value={hotelsList} loading={loading} loadingIcon={<div className="mt-28"><LoaderCircle className="h-6 w-6 animate-spin" /></div>} onRowClick={(row) => { history.push(`/hotels/${row.data.id}`) }} removableSort emptyMessage={<div className="flex justify-center">No results</div>}>
+                    <Column field="hotelName" header="Hotel Name" sortable style={{ width: '20%', cursor: "pointer" }}></Column>
+                    <Column field="hotelCode" header="Hotel Code" sortable style={{ width: '20%', cursor: "pointer" }}></Column>
+                    <Column field="brandCode" header="Brand Code" style={{ width: '20%', cursor: "pointer" }}></Column>
+                    <Column field="city" header="City" style={{ width: '20%', cursor: "pointer" }}></Column>
                     {/*<Column field="phone" header="Phone" style={{ width: '20%' }}></Column>*/}
                     <Column
                         body={(rowData, column) => (<DropdownMenu modal={false}>

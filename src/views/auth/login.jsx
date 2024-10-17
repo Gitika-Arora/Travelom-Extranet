@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useHistory } from 'react-router-dom';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -55,11 +55,11 @@ function Login() {
                 console.log({ err });
 
                 if (err.name === "UserNotFoundException") {
-                    alert("user not found")
+                    alert("Invalid email address or password. Please try again.")
 
                 } else if (err.name === "NotAuthorizedException") {
                     if (err.message === "Incorrect username or password.") {
-                        alert("Incorrect email or password.")
+                        alert("Invalid email address or password. Please try again.")
                     }
 
                 } else {
@@ -68,7 +68,7 @@ function Login() {
             }
 
         } else {
-            console.log('Validation failed'); // Debugging log
+            console.log('Invalid input'); // Debugging log
         }
         setLoadingStatus(false);
     }
