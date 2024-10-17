@@ -19,7 +19,7 @@ import { LoaderCircle } from "lucide-react";
 import Image from "@/components/formImage";
 import { MultiSelect } from 'primereact/multiselect';
 import { FileUpload } from 'primereact/fileupload';
-import Helper from '@/services/helper';
+import helper, { logedInUser } from '@/services/helper';
 import { getHotels, listHotels } from "@/graphql/queries";
 //import { updateHotels } from '@/graphql/mutations';
 import * as mutations from '@/graphql/mutations';
@@ -51,7 +51,6 @@ export default function HotelDetails() {
 
     const [allHotelData, setAllHotelData] = useState([]);
 
-
     useEffect(() => {
         getHotelData();
     }, [])
@@ -62,13 +61,22 @@ export default function HotelDetails() {
         
         setHotelDetails(listData.hotelDetails)
 
-        const client = generateClient();
+        const client = helper.amplifyClient()
 
-        const response = await client.graphql({ query: getHotels, variables: { id: hid } });
+        let config;
+
+        if (hid) {
+            config = { query: getHotels, variables: { id: hid } }
+        } else {
+            const userData = logedInUser();
+            config = { query: getHotels, variables: { id: "3813561c-187e-4f08-8f80-e43a86adf31c" } }
+        }
+
+        const response = await client.graphql(config);
 
         const hotelData = { ...response.data?.getHotels, hotelDescriptiveContents: JSON.parse(response?.data?.getHotels?.hotelDescriptiveContents) };
 
-        setAllHotelData(hotelData)
+        setAllHotelData(hotelData);
 
         setHotelName(hotelData?.hotelName);
         setAddress(hotelData?.address);
@@ -173,7 +181,7 @@ export default function HotelDetails() {
             hotelDescriptiveContents: JSON.stringify(hotelDescriptiveData)
         };
 
-        const client = generateClient();
+        const client = helper.amplifyClient();
 
         try {
             const updatedTodo = await client.graphql({
@@ -199,7 +207,7 @@ export default function HotelDetails() {
 
     return (
         <div>
-            <div>
+            {hid && <div>
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -213,19 +221,19 @@ export default function HotelDetails() {
                         </BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>
-            </div>
+            </div>}
             <div className="mt-6 mx-auto w-full">
                 <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-100 border-0 bg-white">
                     <form onSubmit={handleSubmit}>
                         <div className="flex-auto px-4 lg:px-6 py-6 pt-6">
                             <div className="flex justify-end gap-3">
-                                <Button
+                                {hid && <Button
                                     type="button"
                                     variant="cancel"
                                     onClick={handleCancleClick}
                                 >
                                     Cancel
-                                </Button>
+                                </Button>}
                                 <Button
                                     type="submit"
                                 >
@@ -356,13 +364,13 @@ export default function HotelDetails() {
                                 </div>
                             </div>
                             <div className="flex justify-end gap-3">
-                                <Button
+                                {hid && <Button
                                     type="button"
                                     variant="cancel"
                                     onClick={handleCancleClick}
                                 >
                                     Cancel
-                                </Button>
+                                </Button>}
                                 <Button
                                     type="submit"
                                 >

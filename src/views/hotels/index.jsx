@@ -13,6 +13,7 @@ import { useHistory } from 'react-router-dom';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { listHotels } from "@/graphql/queries";
+import { list_Hotels } from "@/services/customQueries";
 
 import { generateClient } from 'aws-amplify/data';
 import { get } from 'aws-amplify/api';
@@ -33,7 +34,7 @@ export default function Hotels() {
         setLoading(true);
 
         // rest api call from axios
-        let config = {
+        /*let config = {
             method: 'get',
             url: 'https://dca1hl4r89.execute-api.us-east-1.amazonaws.com/default/test-lambda',
             headers: {
@@ -48,7 +49,7 @@ export default function Hotels() {
         }
         catch (error) {
             console.log(error);
-        }
+        }*/
 
         const client = generateClient();
 
@@ -62,14 +63,11 @@ export default function Hotels() {
                 },
             }
         }
-
-        const response = await client.graphql({ query: listHotels, variables });
+        const response = await client.graphql({ query: list_Hotels, variables });
 
         const items = response.data.listHotels.items
 
-        const hotels = items.map(item => ({ ...item, hotelDescriptiveContents: JSON.parse(item.hotelDescriptiveContents)}))
-
-        setHotelsList(hotels)
+        setHotelsList(items)
         setLoading(false)
     }
 

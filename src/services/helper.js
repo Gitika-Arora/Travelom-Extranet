@@ -2,6 +2,8 @@
 import secureLocalStorage from "react-secure-storage";
 import CryptoJS from "crypto-js";
 import { post } from 'aws-amplify/api';
+import { generateClient } from 'aws-amplify/api';
+import { signOut } from 'aws-amplify/auth';
 
 export function isVallidImageFile(image) {
     let imgType = image.type;
@@ -33,27 +35,6 @@ export async function handleImage(file) {
 
 }
 
-export const getCurrencyOptions = () => {
-    return [
-        { value: 'INR', label: 'INR (₹)' },
-        { value: 'USD', label: 'USD ($)' },
-        { value: 'GBP', label: 'GBP (£)' },
-    ];
-};
-
-export const getModules = () => {
-    return {
-        users: true,
-        groups: true,
-        workouts: true,
-        invitees: true,
-        products: false,
-        media: true,
-        team: true,
-        geomessages: true,
-    }
-};
-
 export function isVallidFile(file) {
     let imgType = file.type;
     let fileType = imgType.split('/')[0];
@@ -75,35 +56,6 @@ export async function getFileUrl(file, callback) {
         alert('Please Select Valid File');
     }
 }
-
-/*export async function handleCompressImage(file) {
-
-    return new Promise((resolve, reject) => {
-        const fileType = file.type.split('/')[0];
-
-        if (fileType === 'image') {
-            new Compressor(file, {
-                quality: 0.6,
-                maxHeight: 500,
-                maxWidth: 500,
-                success(result) {
-                    var compressedImage = new File([result], 'compressed-image', {
-                        type: result.type,
-                    })
-                    resolve(compressedImage);
-                },
-                error(err) {
-                    console.log(err.message);
-                    reject(err);
-                }
-            })
-        } else if (fileType === 'video' || fileType === 'audio') {
-            resolve(file);
-        } else {
-            reject(new Error('The file is not a valid image or video.'));
-        }
-    })
-}*/
 
 export function logedInUserId() {
     const userData = secureLocalStorage.getItem('userData');
@@ -210,6 +162,17 @@ export const sendEmail = async (toEmail, message, subject, isHtmlContent, attach
 
 
 class Helper {
+
+    static client = null;
+
+    static amplifyClient() {
+        if (!this.client) {
+            this.client = generateClient();
+        }
+
+        return this.client;
+    }
+
     static isAuthenticated() {
         let loggedInuser = secureLocalStorage.getItem("login");
 
@@ -369,6 +332,7 @@ class Helper {
     }
 
     static Logout() {
+        signOut();
         sessionStorage.clear();
         localStorage.clear();
     }

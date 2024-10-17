@@ -1,36 +1,31 @@
-export const get_Hotels = /* GraphQL */ `
-  query GetHotels($id: ID) {
-    getHotels(id: $id) {
-      id
-      hotelDescriptiveContents
-      brandCode
-      hotelCode
-      hotelCityCode
-      hotelName
-      brandName
-      isActive
-      isDeleted
-      createdAt
-      updatedAt
-    }
-  }
-`;
-export const getHotels = /* GraphQL */ `
-  query GetHotels($id: ID!) {
-    getHotels(id: $id) {
-      id
-      hotelDescriptiveContents
-      brandCode
-      hotelCode
-      hotelCityCode
-      hotelCodeContext
-      hotelName
-      brandName
-      isActive
-      isDeleted
-      createdAt
-      updatedAt
-      __typename
+export const list_Hotels = /* GraphQL */ `
+  query ListHotels(
+    $id: ID
+    $filter: ModelHotelsFilterInput
+    $limit: Int
+    $nextToken: String
+    $sortDirection: ModelSortDirection
+  ) {
+    listHotels(
+      id: $id
+      filter: $filter
+      limit: $limit
+      nextToken: $nextToken
+      sortDirection: $sortDirection
+    ) {
+      items {
+        id
+        userId
+        brandCode
+        hotelCode
+        hotelName
+        city
+        isActive
+        isDeleted
+        createdAt
+        updatedAt
+      }
+      nextToken
     }
   }
 `;

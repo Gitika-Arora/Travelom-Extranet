@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Redirect } from 'react-router-dom';
 import routes from './routes';
 import LandingLayout from "../components/landingLayout";
-import Helper from '../services/helper';
+import Helper, { logedInUser } from '../services/helper';
 const PrivateRoutes = () => {
     const publicRoutes = routes.filter((routes) => !routes.isPublic);
 
@@ -17,7 +17,11 @@ const PrivateRoutes = () => {
                     Helper.isAuthenticated()
                         ? (
                             <LandingLayout>
-                                <RouteVal {...props} />
+                                {
+                                    (logedInUser().userType != 1 && route.isAdmin) || (logedInUser().userType != 2 && route.isHotelOwner) ?
+                                        <Redirect to="/dashboard" /> :
+                                        <RouteVal {...props} />
+                                }
                             </LandingLayout>
                         )
                         : <Redirect to="/" />

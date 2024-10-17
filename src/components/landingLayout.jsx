@@ -4,6 +4,7 @@ import { withRouter } from "react-router-dom";
 import Sidebar from "./sidebar";
 import routes from "../router/routes";
 import secureLocalStorage from "react-secure-storage";
+import { logedInUser } from '../services/helper';
 
 function LandingLayout(props) {
     const [sidebar, setSidebar] = useState(window.innerWidth > 640 ? false : true);
@@ -14,7 +15,13 @@ function LandingLayout(props) {
     const { children, ...rest } = props;
 
     const filterRoutes = routes.filter((route) => {
-        return (!route.isPublic && route.isInSidebar);
+        const userData = logedInUser();
+
+        if (userData && userData?.userType != 1) {
+            return (!route.isPublic && route.isInSidebar && !route.isAdmin);
+        } else {
+            return (!route.isPublic && route.isInSidebar && !route.isHotelOwner);
+        }
     });
 
     return (

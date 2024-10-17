@@ -206,7 +206,7 @@ function Register() {
                         "address": address,
                         "isActive": true,
                         "isDeleted": false,
-                        //"userType": 2
+                        "userType": 2
                     }
 
                     await client.graphql({
