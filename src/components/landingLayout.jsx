@@ -3,10 +3,10 @@ import Header from "./header";
 import { withRouter } from "react-router-dom";
 import Sidebar from "./sidebar";
 import routes from "../router/routes";
-import secureLocalStorage from "react-secure-storage";
 import { logedInUser } from '../services/helper';
 
 function LandingLayout(props) {
+
     const [sidebar, setSidebar] = useState(window.innerWidth > 640 ? false : true);
 
     const handleSidebarToggle = (toggle) => {

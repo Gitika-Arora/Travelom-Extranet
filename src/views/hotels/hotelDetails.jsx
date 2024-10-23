@@ -8,9 +8,6 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-
-import { NavLink } from 'react-router-dom';
-
 import listData from "@/data/listData";
 import { InputText as Input } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -20,13 +17,9 @@ import Image from "@/components/formImage";
 import { MultiSelect } from 'primereact/multiselect';
 import { FileUpload } from 'primereact/fileupload';
 import helper, { logedInUser } from '@/services/helper';
-import { getHotels, listHotels } from "@/graphql/queries";
-//import { updateHotels } from '@/graphql/mutations';
+import { getHotels } from "@/graphql/queries";
 import * as mutations from '@/graphql/mutations';
-import { generateClient } from 'aws-amplify/data';
 import { uploadData } from 'aws-amplify/storage';
-import { Trash2 } from "lucide-react";
-import { Button as PrimeButton } from 'primereact/button';
 import hotelAmenity from "@/data/hotelAmenity.json";
 
 export default function HotelDetails() {
@@ -51,57 +44,102 @@ export default function HotelDetails() {
 
     const [allHotelData, setAllHotelData] = useState([]);
 
+    const [loadingStatus, setLoadingStatus] = useState(false);
+
     useEffect(() => {
         getHotelData();
     }, [])
 
     const getHotelData = async () => {
+
         setAmenityOptions(hotelAmenity);
+
         setRoomOptions(listData.staticData.rooms);
-        
+
         setHotelDetails(listData.hotelDetails)
 
-        const client = helper.amplifyClient()
-
-        let config;
-
+        console.log(hid);
         if (hid) {
-            config = { query: getHotels, variables: { id: hid } }
-        } else {
-            const userData = logedInUser();
-            config = { query: getHotels, variables: { id: "3813561c-187e-4f08-8f80-e43a86adf31c" } }
+
+            const client = helper.amplifyClient()
+
+            let config;
+
+            if (hid) {
+                config = { query: getHotels, variables: { id: hid } }
+            } else {
+                config = { query: getHotels, variables: { id: "3813561c-187e-4f08-8f80-e43a86adf31c" } }
+            }
+
+            const response = await client.graphql(config);
+
+            const hotelData = { ...response.data?.getHotels, hotelDescriptiveContents: JSON.parse(response?.data?.getHotels?.hotelDescriptiveContents) };
+
+            console.log(hotelData);
+
+            setAllHotelData(hotelData);
+
+            setHotelName(hotelData?.hotelName);
+            setAddress(hotelData?.address);
+            setCity(hotelData?.city);
+
+            const descriptionData = hotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.HotelInfo?.Descriptions?.Description.filter(data => data?._attributes?.AdditionalDetailCode === '2')
+
+            setOverview(descriptionData[0]?.Text?._text);
+
+            const amenityData = hotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.HotelInfo?.Services?.Service.filter(data => {
+                return data?._attributes?.Code
+            }).map(data => (JSON.parse(data?._attributes?.Code)))
+
+            setAmenities(amenityData)
+
+            setHotelImages(hotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.MultimediaObjects?.MultimediaObject);
         }
-
-        const response = await client.graphql(config);
-
-        const hotelData = { ...response.data?.getHotels, hotelDescriptiveContents: JSON.parse(response?.data?.getHotels?.hotelDescriptiveContents) };
-
-        setAllHotelData(hotelData);
-
-        setHotelName(hotelData?.hotelName);
-        setAddress(hotelData?.address);
-        setCity(hotelData?.city);
-
-        const descriptionData = hotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.HotelInfo?.Descriptions?.Description.filter(data => data?._attributes?.AdditionalDetailCode === '2')
-        setOverview(descriptionData[0]?.Text?._text);
-
-        const amenityData = hotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.HotelInfo?.Services?.Service.filter(data => {
-            return data?._attributes?.Code
-        }).map(data => (JSON.parse(data?._attributes?.Code)))
-
-        setAmenities(amenityData)
-
-        setHotelImages(hotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.MultimediaObjects?.MultimediaObject);
     }
 
-    const handleImageClick = (imageData, index) => {
+    const handleImageDelete = async (imageData, index) => {
 
-        const updatedImages = hotelImages.filter((_, i) => index !== i);
+        const confirmation = confirm("Do you want to delete this image?")
 
-        setHotelImages(updatedImages)
+        console.log(confirmation);
+
+        if (confirmation) {
+            const updatedImages = hotelImages.filter((_, i) => index !== i);
+
+            const hotelDescriptiveData = {
+                HotelDescriptiveContent: {
+                    ...allHotelData?.hotelDescriptiveContents?.HotelDescriptiveContent,
+                    MultimediaObjects: {
+                        ...allHotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.MultimediaObjects,
+                        MultimediaObject: updatedImages
+                    }
+                }
+            };
+
+            const hotelDetails = {
+                id: hid,
+                hotelDescriptiveContents: JSON.stringify(hotelDescriptiveData)
+            };
+
+            const client = helper.amplifyClient();
+
+            console.log(hotelDescriptiveData, hotelDetails);
+
+            try {
+                await client.graphql({
+                    query: mutations.updateHotels,
+                    variables: { input: hotelDetails },
+                });
+
+                setHotelImages(updatedImages);
+
+            } catch (error) {
+                console.error("Error updating images:", error);
+            }
+        }
     }
 
-    function updateAmenitiesData(amenityOptions, amenityData, existingData) {
+    function updateAmenitiesData(amenityData, existingData) {
         // Helper function to check if an entry already exists in existingData
         const findInExistingData = (code) => {
             return existingData.find(
@@ -138,24 +176,110 @@ export default function HotelDetails() {
         return existingData;
     }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        //console.log(fileUploadRef.current.getFiles())
+    const handleAddHotel = async () => {
+        const updatedAmenitiesData = amenities.map((code) => ({
+            _attributes: {
+                ProximityCode: "",
+                Included: true,
+                Code: String(code),
+            }
+        })
+        );
 
+        const descriptionArray = [{
+            "Text": {
+                "_text": overview,
+                "_attributes": {
+                    "Language": "en"
+                }
+            },
+            "_attributes": {
+                "AdditionalDetailCode": "2",
+                "ContentID": ""
+            }
+        }]
+
+
+        const hotelDescriptiveData = {
+            HotelDescriptiveContent: {
+                HotelInfo: {
+                    Descriptions: {
+                        Description: descriptionArray
+                    },
+                    Services: {
+                        Service: updatedAmenitiesData
+                    }
+                }
+            }
+        };
+
+        /*
+        id
+        userId
+        hotelDescriptiveContents
+        brandCode
+        hotelCode
+        hotelName
+        address
+        city
+        postalCode
+        stateCode
+        countyCode
+        hotelUpdatedInExtranet
+        isActive
+        isDeleted
+        createdAt
+        updatedAt
+        */
+
+        const hotelDetails = {
+            brandCode: "BU",
+            hotelCode: "49012",
+            postalCode: "46060-4259",
+            stateCode: "IN",
+            countyCode: "US",
+            hotelName: hotelName,
+            address: address,
+            city: city,
+            hotelDescriptiveContents: JSON.stringify(hotelDescriptiveData),
+            isActive: true,
+            isDeleted: false,
+            hotelUpdatedInExtranet: true
+        };
+
+        console.log({...hotelDetails, hotelDescriptiveContents: JSON.parse(hotelDetails.hotelDescriptiveContents)});
+
+        const client = helper.amplifyClient();
+
+        try {
+            const data = await client.graphql({
+                query: mutations.createHotels,
+                variables: { input: hotelDetails }, // Ensure the body is a string
+            });
+            console.log(data);
+            alert("Hotel added successfully")
+        } catch (error) {
+            console.error("Error added hotelData:", {error});
+        }
+    }
+
+    const handleEditHotel = async () => {
         const existingAmenities = allHotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.HotelInfo?.Services?.Service
 
-        const updatedAmenitiesData = updateAmenitiesData(amenityOptions, amenities, existingAmenities);
+        const updatedAmenitiesData = updateAmenitiesData(amenities, existingAmenities);
 
         const descriptionArray = allHotelData?.hotelDescriptiveContents?.HotelDescriptiveContent?.HotelInfo?.Descriptions?.Description?.map(data => {
             if (data._attributes
                 .AdditionalDetailCode == 2) {
                 return {
-                    ...data, Text: { ...data.Text, _text: overview}
+                    ...data, Text: { ...data.Text, _text: overview }
                 }
             } else {
                 return data;
             }
         });
+
+        console.log(descriptionArray);
 
 
         const hotelDescriptiveData = {
@@ -173,7 +297,7 @@ export default function HotelDetails() {
             }
         };
 
-        const todoDetails = {
+        const hotelDetails = {
             id: hid,
             hotelName: hotelName,
             address: address,
@@ -184,21 +308,37 @@ export default function HotelDetails() {
         const client = helper.amplifyClient();
 
         try {
-            const updatedTodo = await client.graphql({
+            await client.graphql({
                 query: mutations.updateHotels,
-                variables: { input: todoDetails }, // Ensure the body is a string
+                variables: { input: hotelDetails }, // Ensure the body is a string
             });
             alert("Hotel details updated successfully")
         } catch (error) {
-            console.error("Error updating todo:", error);
+            console.error("Error updating hotelData:", error);
         }
-       /* const file = event.target.files[0];
-        uploadData({
-            path: file.name,
-            data: file
-        });*/
+    }
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        //console.log(fileUploadRef.current.getFiles())
+
+        setLoadingStatus(true);
+
+        if (hid) {
+            handleEditHotel();
+        } else {
+            handleAddHotel();
+        }
+        
+        /* const file = event.target.files[0];
+         uploadData({
+             path: file.name,
+             data: file
+         });*/
 
         //fileUploadRef.current.upload()
+
+        setLoadingStatus(false);
     }
 
     const handleCancleClick = () => {
@@ -207,7 +347,7 @@ export default function HotelDetails() {
 
     return (
         <div>
-            {hid && <div>
+            <div>
                 <Breadcrumb>
                     <BreadcrumbList>
                         <BreadcrumbItem>
@@ -217,11 +357,11 @@ export default function HotelDetails() {
                         </BreadcrumbItem>
                         <BreadcrumbSeparator />
                         <BreadcrumbItem>
-                            <BreadcrumbPage>Hotel Details</BreadcrumbPage>
+                            <BreadcrumbPage>{hid ? "Hotel Details" : "Add Hotel"}</BreadcrumbPage>
                         </BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>
-            </div>}
+            </div>
             <div className="mt-6 mx-auto w-full">
                 <div className="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-blueGray-100 border-0 bg-white">
                     <form onSubmit={handleSubmit}>
@@ -236,9 +376,10 @@ export default function HotelDetails() {
                                 </Button>}
                                 <Button
                                     type="submit"
+                                    disabled={loadingStatus ? true : false}
                                 >
                                     Save
-                                    {/* {loadingStatus && <LoaderCircle className="ml-1 h-6 w-6 animate-spin" />} */}
+                                    {loadingStatus && <LoaderCircle className="ml-1 h-6 w-6 animate-spin" />}
                                 </Button>
                             </div>
                             <div className="flex flex-wrap">
@@ -296,7 +437,7 @@ export default function HotelDetails() {
                                 </div>
                                 <div className="w-full px-4">
                                     <div className="relative w-full md:w-6/12 mb-3">
-                                        <label className="block text-blueGray-600 text-lg  font-bold mb-2" >
+                                        <label className="block text-blueGray-600 text-lg  font-bold mb-2">
                                             City
                                         </label>
                                         <Input className="px-3 py-2 w-full" id="title"
@@ -307,7 +448,7 @@ export default function HotelDetails() {
                                 </div>
                                 <div className="w-full px-4">
                                     <div className="relative w-full md:w-6/12 mb-3">
-                                        <label className="block text-blueGray-600 text-lg  font-bold mb-2" >
+                                        <label className="block text-blueGray-600 text-lg  font-bold mb-2">
                                             Rooms
                                         </label>
                                         <MultiSelect value={hotelDetails?.rooms} onChange={(e) => setHotelDetails({ ...hotelDetails, rooms: e.value })} options={roomOptions} optionLabel="name"
@@ -323,8 +464,8 @@ export default function HotelDetails() {
                                             return <div key={imageData._attributes.ContentID} className="w-1/6">
                                                 <Image
                                                     src={imageData.URL._text}
-                                                    alt="image"
-                                                    onClick={() => handleImageClick(imageData, i)}
+                                                    alt="hotel image"
+                                                    onDelete={() => { handleImageDelete(imageData, i) }}
                                                 />
                                             </div>
                                         })}
@@ -342,19 +483,14 @@ export default function HotelDetails() {
                                             uploadHandler={(e) => {
                                                 console.log(e)
                                                 const newImages = e.files.map(file => (file.objectURL))
-                                                setHotelDetails({ ...hotelDetails, images: [...hotelDetails.images, ...newImages] })
-                                            }}
-                                            onRemove={(e) => {
-                                                images.files = images.files.filter(file => file.id === e.id)
-                                                console.log(images, e)
-                                                setImages(images)
+                                                console.log(newImages);
+                                                e.options.clear();
                                             }}
                                             emptyTemplate={<p className="m-0">Drag and drop files to here to upload.</p>}
                                             pt={{
                                                 root: "my-3",
                                                 //file: "w-fit",
                                                 badge: { root: "px-2" },
-
                                                 actions: "ml-auto",
                                                 uploadButton: { root: "hidden" },
                                                 chooseButton: { root: "cursor-pointer" }
@@ -373,9 +509,10 @@ export default function HotelDetails() {
                                 </Button>}
                                 <Button
                                     type="submit"
+                                    disabled={loadingStatus ? true : false}
                                 >
                                     Save
-                                    {/* {loadingStatus && <LoaderCircle className="ml-1 h-6 w-6 animate-spin" />} */}
+                                    {loadingStatus && <LoaderCircle className="ml-1 h-6 w-6 animate-spin" />}
                                 </Button>
                             </div>
                         </div>
