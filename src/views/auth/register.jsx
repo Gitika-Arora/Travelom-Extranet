@@ -12,59 +12,6 @@ import { createUsers } from '@/graphql/mutations';
 import AuthHeader from "@/components/authHeader";
 import { Dropdown } from 'primereact/dropdown';
 
-const countryOptions = [
-    { label: "United States", value: "United States" },
-    { label: "China", value: "China" },
-    { label: "Russia", value: "Russia" },
-    { label: "India", value: "India" },
-    { label: "Germany", value: "Germany" },
-    { label: "United Kingdom", value: "United Kingdom" },
-    { label: "France", value: "France" },
-    { label: "Japan", value: "Japan" },
-    { label: "Brazil", value: "Brazil" },
-    { label: "Canada", value: "Canada" },
-    { label: "Australia", value: "Australia" },
-    { label: "South Korea", value: "South Korea" },
-    { label: "Saudi Arabia", value: "Saudi Arabia" },
-    { label: "Israel", value: "Israel" },
-    { label: "Turkey", value: "Turkey" },
-    { label: "Italy", value: "Italy" },
-    { label: "Mexico", value: "Mexico" },
-    { label: "South Africa", value: "South Africa" },
-    { label: "Indonesia", value: "Indonesia" },
-    { label: "Argentina", value: "Argentina" },
-    { label: "Nigeria", value: "Nigeria" },
-    { label: "Egypt", value: "Egypt" },
-    { label: "Pakistan", value: "Pakistan" },
-    { label: "Ukraine", value: "Ukraine" },
-    { label: "Iran", value: "Iran" },
-    { label: "Venezuela", value: "Venezuela" },
-    { label: "Spain", value: "Spain" },
-    { label: "Poland", value: "Poland" },
-    { label: "Bangladesh", value: "Bangladesh" },
-    { label: "Malaysia", value: "Malaysia" },
-    { label: "Colombia", value: "Colombia" },
-    { label: "Thailand", value: "Thailand" },
-    { label: "Vietnam", value: "Vietnam" },
-    { label: "Philippines", value: "Philippines" },
-    { label: "Netherlands", value: "Netherlands" },
-    { label: "Belgium", value: "Belgium" },
-    { label: "Sweden", value: "Sweden" },
-    { label: "Singapore", value: "Singapore" },
-    { label: "United Arab Emirates", value: "United Arab Emirates" },
-    { label: "Iraq", value: "Iraq" },
-    { label: "Kazakhstan", value: "Kazakhstan" },
-    { label: "Ethiopia", value: "Ethiopia" },
-    { label: "Chile", value: "Chile" },
-    { label: "Qatar", value: "Qatar" },
-    { label: "Norway", value: "Norway" },
-    { label: "Myanmar", value: "Myanmar" },
-    { label: "Kenya", value: "Kenya" },
-    { label: "Algeria", value: "Algeria" },
-    { label: "Sudan", value: "Sudan" },
-    { label: "Morocco", value: "Morocco" }
-];
-
 function Register() {
     const history = useHistory();
     const [passwordShow, setPasswordShow] = useState(false);
@@ -84,7 +31,79 @@ function Register() {
     const [pinCode, setPinCode] = useState("");
     const [country, setCountry] = useState("");
 
+    const [brandCode, setBrandCode] = useState(undefined);
+
     const [loadingStatus, setLoadingStatus] = useState(false);
+
+    const countryOptions = [
+        { label: "United States", value: "United States" },
+        { label: "China", value: "China" },
+        { label: "Russia", value: "Russia" },
+        { label: "India", value: "India" },
+        { label: "Germany", value: "Germany" },
+        { label: "United Kingdom", value: "United Kingdom" },
+        { label: "France", value: "France" },
+        { label: "Japan", value: "Japan" },
+        { label: "Brazil", value: "Brazil" },
+        { label: "Canada", value: "Canada" },
+        { label: "Australia", value: "Australia" },
+        { label: "South Korea", value: "South Korea" },
+        { label: "Saudi Arabia", value: "Saudi Arabia" },
+        { label: "Israel", value: "Israel" },
+        { label: "Turkey", value: "Turkey" },
+        { label: "Italy", value: "Italy" },
+        { label: "Mexico", value: "Mexico" },
+        { label: "South Africa", value: "South Africa" },
+        { label: "Indonesia", value: "Indonesia" },
+        { label: "Argentina", value: "Argentina" },
+        { label: "Nigeria", value: "Nigeria" },
+        { label: "Egypt", value: "Egypt" },
+        { label: "Pakistan", value: "Pakistan" },
+        { label: "Ukraine", value: "Ukraine" },
+        { label: "Iran", value: "Iran" },
+        { label: "Venezuela", value: "Venezuela" },
+        { label: "Spain", value: "Spain" },
+        { label: "Poland", value: "Poland" },
+        { label: "Bangladesh", value: "Bangladesh" },
+        { label: "Malaysia", value: "Malaysia" },
+        { label: "Colombia", value: "Colombia" },
+        { label: "Thailand", value: "Thailand" },
+        { label: "Vietnam", value: "Vietnam" },
+        { label: "Philippines", value: "Philippines" },
+        { label: "Netherlands", value: "Netherlands" },
+        { label: "Belgium", value: "Belgium" },
+        { label: "Sweden", value: "Sweden" },
+        { label: "Singapore", value: "Singapore" },
+        { label: "United Arab Emirates", value: "United Arab Emirates" },
+        { label: "Iraq", value: "Iraq" },
+        { label: "Kazakhstan", value: "Kazakhstan" },
+        { label: "Ethiopia", value: "Ethiopia" },
+        { label: "Chile", value: "Chile" },
+        { label: "Qatar", value: "Qatar" },
+        { label: "Norway", value: "Norway" },
+        { label: "Myanmar", value: "Myanmar" },
+        { label: "Kenya", value: "Kenya" },
+        { label: "Algeria", value: "Algeria" },
+        { label: "Sudan", value: "Sudan" },
+        { label: "Morocco", value: "Morocco" }
+    ];
+
+    const brandCodeOptions = [
+        "A3", "AA", "AH", "AK", "AL", "AM", "AR", "AV", "AY", "B2", "BC", "BH", "BM", "BR", "BT", "BU", "BV", "BW", "BZ",
+        "C2", "CB", "CC", "CD", "CHI", "CI", "CM", "CN", "CP", "CQ", "CR", "CU", "CW", "CY", "CZ", "D2", "DC", "DE", "DH",
+        "DI", "DN", "DO", "DP", "DR", "DS", "DT", "DW", "DX", "E4", "EA", "EB", "EG", "EI", "EL", "EO", "ES", "ET", "EX",
+        "EZ", "FA", "FB", "FK", "FN", "FP", "FR", "FS", "GA", "GD", "GE", "GG", "GH", "GI", "GL", "GP", "GQ", "GR", "GS",
+        "GV", "GW", "GX", "H1", "HA", "HC", "HE", "HG", "HH", "HI", "HJ", "HO", "HR", "HS", "HT", "HU", "HX", "HY", "IC",
+        "IN", "IQ", "IR", "IS", "JB", "KC", "KH", "KL", "KS", "KY", "LA", "LC", "LE", "LL", "LM", "LO", "LP", "LQ", "LR",
+        "LW", "LX", "LZ", "M4", "MC", "MD", "MES", "MG", "MH", "MI", "MN", "MO", "MP", "MR", "MS", "MU", "MV", "MX", "MY",
+        "MZ", "NB", "NC", "NH", "NK", "NU", "NY", "NZ", "O1", "O2", "OA", "OB", "OE", "OK", "OL", "OM", "ON", "OR", "OX",
+        "PE", "PF", "PH", "PII", "PJ", "PKP", "PL", "PN", "PO", "PQ", "PS", "PU", "PW", "PY", "QI", "QQ", "QU", "RA", "RAD",
+        "RC", "RF", "RH", "RI", "RK", "RL", "RO", "RQ", "RU", "RW", "RZ", "S4", "S6", "S7", "SA", "SB", "SC", "SD", "SE",
+        "SI", "SL", "SM", "SN", "SO", "SP", "SR", "SW", "SZ", "TA", "TC", "TJ", "TL", "TO", "TW", "TX", "UA", "UB", "UE",
+        "UI", "UP", "UR", "UV", "UZ", "VA", "VC", "VE", "VG", "VL", "VN", "VS", "VT", "VX", "VY", "WA", "WB", "WE", "WG",
+        "WH", "WI", "WK", "WO", "WT", "WV", "WX", "WY", "XH", "XN", "XO", "XQ", "XR", "XT", "XV", "XW", "YL", "YO", "YR",
+        "YX", "ZA"
+    ];
 
     function validateInputs() {
         let message = '';
@@ -166,7 +185,7 @@ function Register() {
                     if (err.name === "UserNotFoundException") {
                         isUserAlreadyExists = false;
                     } else if (err.name === "NotAuthorizedException") {
-                        if (err.message === "Invalid email address or password. Please try again.") isUserAlreadyExists = true;
+                        if (err.message === "Incorrect username or password.") isUserAlreadyExists = true;
                     }
                 });
 
@@ -187,7 +206,6 @@ function Register() {
                                 'custom:userType': "2"
                             },
                         },
-
                     });
 
                     const client = generateClient();
@@ -251,7 +269,7 @@ function Register() {
                             <p className="pb-8 text-center text-3xl font-medium">Register</p>
 
                             <div className="flex flex-wrap">
-                                <div className="px-4 w-6/12">
+                                <div className="px-4 w-full">
                                     <div className="mb-1 relative w-full">
                                         <label className="text-blueGray-600 mb-1 text-md block font-bold">
                                             Hotel Name
@@ -274,6 +292,29 @@ function Register() {
                                             className="px-2 py-1"
                                             value={hotelCode}
                                             onChange={e => setHotelCode(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="px-4 w-6/12">
+                                    <div className="mb-1 relative w-full">
+                                        <label className="text-blueGray-600 mb-1 text-md block font-bold">
+                                            Brand Code
+                                        </label>
+                                        <Dropdown
+                                            value={brandCode}
+                                            onChange={(e) => { console.log(e.value); setBrandCode(e.value) }}
+                                            options={brandCodeOptions}
+                                            virtualScrollerOptions={{ itemSize: 38 }}
+                                            showClear
+                                            placeholder="Select Brand Code"
+                                            className="w-full"
+                                            pt={{
+                                                root: "border-2 border-slate-200 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-base focus:outline-none focus:border-gray-500  w-full md:w-full ease-linear transition-all duration-150 file:bg-gray-200 file:border-0 file:me-4 file:py-2 file:px-2 dark:file:bg-neutral-700 dark:file:text-neutral-400 hover:border-slate-200",
+                                                input: "px-2 py-1",
+                                                panel: "max-h-[200px] overflow-auto bg-white text-gray-700 border-0 rounded-md shadow-lg",
+                                                item: "flex items-center",
+                                                list: "p-0"
+                                            }}
                                         />
                                     </div>
                                 </div>

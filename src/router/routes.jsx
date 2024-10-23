@@ -5,6 +5,7 @@ import Dashboard from "@/views/dashboard/index";
 import Hotels from "@/views/hotels";
 import Availability from "@/views/availability";
 import HotelDetails from "@/views/hotels/hotelDetails";
+import Users from "@/views/users";
 // --------------------images--------------
 
 import DashboardIcon from "../assets/images/DashboardIcon.png"
@@ -51,20 +52,10 @@ const routes = [
         isPublic: false,
         icon: <Hotel size={20} />,
         isInSidebar: true,
-        isAdmin: true
+        //isAdmin: true
     },
     {
         id: 7,
-        path: '/hotels-details',
-        component: HotelDetails,
-        name: "Hotel Information",
-        isPublic: false,
-        icon: <Hotel size={20} />,
-        isInSidebar: true,
-        isHotelOwner: true
-    },
-    {
-        id: 8,
         path: '/availability',
         component: Availability,
         //name: "Booking History",
@@ -75,13 +66,30 @@ const routes = [
         //isInSidebar: true
     },
     {
+        id: 8,
+        path: '/users',
+        component: Users,
+        name: "Users",
+        isPublic: false,
+        icon: <UsersIcon size={20} />,
+        isInSidebar: true,
+        isAdmin: true
+    },
+    {
         id: 51,
-        path: '/hotels/:hid',
+        path: '/hotels/hotel-details/:hid',
         component: HotelDetails,
         name: "hotelDetails",
         isPublic: false,
-        icon: <User size={20} />,
-        isAdmin: true
+        //isAdmin: true
+    },
+    {
+        id: 52,
+        path: '/hotels/add-hotel',
+        component: HotelDetails,
+        name: "hotelDetails",
+        isPublic: false,
+        //isAdmin: true
     },
 ]
 export default routes;

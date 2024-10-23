@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+﻿import React, { useEffect } from "react";
 import UserGesture from "../lib/userGesture"
 import { NavLink } from "react-router-dom/cjs/react-router-dom";
 function Sidebar(props) {
@@ -45,7 +45,7 @@ function Sidebar(props) {
     return (
         <>
             <aside ref={ref} id="logo-sidebar" className={`fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform border-r sm:translate-x-0 bg-primary border-gray-700 ${props.sidebarState && '-translate-x-full'}`} aria-label="Sidebar">
-                <div className="h-full px-3 pb-4 overflow-y-auto bg-primary">
+                <div className="px-3 pb-4 bg-primary h-full overflow-y-auto">
                     <span >{createLinks(props.routes)}</span>
                 </div>
             </aside>
